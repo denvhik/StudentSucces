@@ -2,7 +2,7 @@ use StudentSucces;
 
 IF NOT EXISTS(SELECT * FROM sys.views WHERE name = 'VW_StudentGroupView')
 BEGIN
-    CREATE VIEW [VW_StudentGroupView] AS
+    CREATE  VIEW [VW_StudentGroupView] AS
     SELECT 
         [st].[StudentID],
         [st].[FirstName],
@@ -19,7 +19,7 @@ END;
 
 GO
 
-CREATE PROCEDURE [SP_GetOverdueBooksReport]
+CREATE OR ALTER PROCEDURE [SP_GetOverdueBooksReport]
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -48,7 +48,7 @@ EXEC  [SP_GetOverdueBooksReport];
 
 GO
 
-CREATE  PROCEDURE  [dbo].[SP_SortStudentRating]
+CREATE OR ALTER PROCEDURE  [dbo].[SP_SortStudentRating]
 AS
 BEGIN
     SELECT
@@ -56,8 +56,7 @@ BEGIN
         [st].[FirstName],
         [st].[LastName],
         [ss].[Score],
-        [su].[SubjectName],
-		[st].[Scholarship]
+        [su].[SubjectName]
     FROM
         [dbo].[Student] st
     INNER JOIN
@@ -73,7 +72,7 @@ GO
 
 GO
 
-CREATE PROC [dbo].[ST_StudentRating] AS
+CREATE  OR ALTER PROC [dbo].[ST_StudentRating] AS
 BEGIN
 SELECT
 	st.[FirstName],
