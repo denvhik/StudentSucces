@@ -17,15 +17,15 @@ BEGIN
 END;
 GO
 
-CREATE PROCEDURE [CalculateScholarshipForStudent]
+CREATE OR ALTER PROCEDURE [CalculateScholarshipForStudent]
     @StudentID INT,
     @Month INT,
     @Year INT
 AS
 IF NOT EXISTS (
     SELECT 1
-    FROM StudentScholarshipAudit
-    WHERE StudentID = @StudentID
+    FROM [dbo].[StudentScholarshipAudit]
+    WHERE [dbo].[StudentScholarshipAudit].[StudentID] = @StudentID
       AND Month = @Month
       AND Year = @Year
 )
@@ -56,7 +56,7 @@ BEGIN
     PRINT 'Scholarship already calculated for this student for the current month and year.'
 END
 GO
-CREATE PROCEDURE [CalculateScholarshipForAllStudents]
+CREATE  OR ALTER PROCEDURE [CalculateScholarshipForAllStudents]
     @Month INT,
     @Year INT
 AS
@@ -64,24 +64,24 @@ BEGIN
     SET NOCOUNT ON;
 
     DECLARE @StudentID INT;
-    DECLARE @StudentCount INT;
-    SELECT @StudentCount = COUNT(*) FROM Student;
-    DECLARE @Counter INT;
+    DECLARE [StudentCursor ]CURSOR FOR 
+        SELECT [dbo].[Student].[StudentID] FROM [dbo].[Student]
+        ORDER BY [Student].[StudentID];
 
-    SET @Counter = 1;
-    WHILE @Counter <= @StudentCount
+    OPEN [StudentCursor];
+
+    FETCH NEXT FROM [StudentCursor] INTO @StudentID;
+
+    WHILE @@FETCH_STATUS = 0
     BEGIN
-        SELECT @StudentID = [StudentID]
-        FROM (
-            SELECT ROW_NUMBER() OVER (ORDER BY StudentID) AS RowNum, [StudentID]
-            FROM Student
-        ) AS NumberedStudents
-        WHERE RowNum = @Counter;
-        EXEC CalculateScholarshipForStudent @StudentID, @Month, @Year;
-        SET @Counter = @Counter + 1;
+        EXEC [CalculateScholarshipForStudent] @StudentID, @Month, @Year;
+        FETCH NEXT FROM [StudentCursor] INTO @StudentID;
     END;
+
+    CLOSE StudentCursor;
+    DEALLOCATE StudentCursor;
 END;
 
- EXEC CalculateScholarshipForAllStudents @Month=2,@Year = 2024;
- EXEC CalculateScholarshipForStudent @StudentID = 3, @Month = 3, @Year = 2024;
- DROP PROC [CalculateScholarshipForStudent];
+ EXEC [CalculateScholarshipForAllStudents] @Month=3,@Year = 2024;
+ EXEC [CalculateScholarshipForStudent] @StudentID = 3, @Month = 3, @Year = 2024;
+ DROP PROC [CalculateScholarshipForAllStudents];
