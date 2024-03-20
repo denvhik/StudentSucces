@@ -5,19 +5,22 @@ OR  [Gender] = 'Female'
 
 
 SELECT 
-    [StudentID],
-    [FirstName],
-    [LastName],
-    [BirthYear],
-    [BirthYear],
-    [BirthPlace],
-    [Gender],
+    [ss].[StudentID],
+    [ss].[FirstName],
+    [ss].[LastName],
+    [ss].[BirthYear],
+    [ss].[BirthPlace],
+    [ss].[Gender],
+	[as].[Amount],
     CASE 
-        WHEN [Scholarship] > 1000 THEN 'Recipient'
+        WHEN [as].[Amount] > 1000 THEN 'Recipient'
         ELSE 'Not recipient'
     END AS ScholarshipStatus
 FROM 
-    [StudentSucces].[dbo].[Student]
+	[StudentScholarshipAudit] [as]
+INNER JOIN 
+	Student  [ss] ON [ss].[StudentID] = [as].StudentID
+
 
 SELECT 
 	[dbo].[Student].[StudentID],
@@ -83,9 +86,11 @@ JOIN
 JOIN 
 	[Dormitory] ON [StudentsDormitory].[DormitoryID] = [Dormitory].[DormitoryID]
 
+
+
 SELECT *
-FROM [dbo].[Student]
-WHERE [Student].[Scholarship] IN (2000);
+FROM [dbo].[StudentScholarshipAudit]
+WHERE [StudentScholarshipAudit].[Amount] IN (2000);
 
 SELECT 
 	[StudentID],
@@ -116,10 +121,10 @@ WHERE  EXISTS (
 );
 
 SELECT *
-FROM [dbo].[Student] s
-WHERE s.[StudentID] = ANY (
-    SELECT sh.[StudentID]
-    FROM [dbo].[StudentHobby] sh
+FROM [dbo].[Student] [s]
+WHERE [s].[StudentID] = ANY (
+    SELECT [sh].[StudentID]
+    FROM [dbo].[StudentHobby] [sh]
 );
 
 
@@ -127,28 +132,28 @@ WHERE s.[StudentID] = ANY (
 
 SELECT
     [sg].[GroupID],
-    AVG(ss.Score) AS AverageScore
+    AVG([ss].[Score]) AS AverageScore
 FROM
-    [dbo].[StudentGroup] sg
-INNER JOIN [dbo].[StudentSubject] ss ON sg.StudentID = ss.StudentID
+    [dbo].[StudentGroup] [sg]
+INNER JOIN [dbo].[StudentSubject] [ss] ON [sg].[StudentID] = [ss].[StudentID]
 GROUP BY
-    sg.GroupID;
+    [sg].[GroupID];
 
-SELECT s.*
+SELECT [s].*
 FROM (
-    SELECT s.*
+    SELECT [s].*
     FROM
-		[dbo].[Student] s
+		[dbo].[Student] [s]
     INNER JOIN 
-		[dbo].[StudentsDormitory] sd ON s.[StudentID] = sd.[StudentID]
+		[dbo].[StudentsDormitory] [sd] ON [s].[StudentID] = [sd].[StudentID]
     WHERE 
-		sd.[DormitoryID] BETWEEN 2 AND 4
-) AS s;
+		[sd].[DormitoryID] BETWEEN 2 AND 4
+) AS [s];
 
 SELECT *
 FROM [dbo].[Student]
 WHERE [StudentID] IN (
-    SELECT StudentID
+    SELECT [StudentID]
     FROM [dbo].[Student]
     WHERE [MaritalStatus] = 'Married'
 ) AND [Gender] = 'Female';
@@ -176,15 +181,15 @@ WHERE
 SELECT TOP 10 [StudentID] FROM [dbo].[Student] ORDER BY ABS(CHECKSUM(NEWID()))
 );
 
-UPDATE ss
-SET ss.[Score] = ABS(CHECKSUM(NEWID())) % 40 + 60
-FROM [StudentSubject] ss
+UPDATE [ss]
+SET [ss].[Score] = ABS(CHECKSUM(NEWID())) % 40 + 60
+FROM [StudentSubject] [ss]
 INNER JOIN (
     SELECT 
        [StudentID]
-    FROM [Student] s 
-) s ON ss.[StudentID] = s.[StudentID]
-WHERE s.[StudentID] >= 10;
+    FROM [Student] [s]
+) [s] ON [ss].[StudentID] = [s].[StudentID]
+WHERE [s].[StudentID] >= 10;
 
 
 INSERT INTO [dbo].[Hobbie] (HobbyName)
