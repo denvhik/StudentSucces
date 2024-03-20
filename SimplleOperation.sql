@@ -26,7 +26,6 @@ SELECT
 	[dbo].[Student].[BirthPlace],
 	[dbo].[Student].[BirthYear],
 	[dbo].[Student].[Gender],
-	[dbo].[Student].[Scholarship],
 	[dbo].[Dormitory].[RoomNumber],
 	[dbo].[Dormitory].[DormitoryName],
 	[dbo].[Groups].[GroupName]
@@ -43,7 +42,7 @@ JOIN
 WHERE 
 	([dbo].[Student].[BirthYear] < 2004 AND [dbo].[Student].[Gender] = 'Female')
 OR
-	[dbo].[Student].[Scholarship] = 2000
+	[dbo].[Student].[BirthPlace] = 'Kyiv'
 
 
 SELECT 
@@ -53,7 +52,6 @@ SELECT
 	[dbo].[Student].[BirthPlace],
 	[dbo].[Student].[BirthYear],
 	[dbo].[Student].[Gender],
-	[dbo].[Student].[Scholarship],
 	[dbo].[Dormitory].[RoomNumber],
 	[dbo].[Dormitory].[DormitoryName],
 	[dbo].[Groups].[GroupName]
