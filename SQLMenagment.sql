@@ -32,14 +32,15 @@ AFTER INSERT, UPDATE
 AS
 BEGIN
     UPDATE s
-    SET s.CreatedBy = CURRENT_USER,
+    SET s.CreatedBy =  (CAST(SUBSTRING(CAST(SUSER_SID() AS varbinary(85)), 1, 16) AS uniqueidentifier)),
         s.CreatedDateTime = GETDATE(),
-        s.ModifiedBy = CURRENT_USER,
+        s.ModifiedBy =  (CAST(SUBSTRING(CAST(SUSER_SID() AS varbinary(85)), 1, 16) AS uniqueidentifier)),
         s.ModifiedDateTime = GETDATE()
     FROM dbo.Student s
     JOIN inserted i ON s.StudentID = i.StudentID;
 END;
 GO
+DROP TRIGGER [tr_Student_StudentAudiTime];
 
 CREATE OR ALTER TRIGGER [tr_Student_StudentGroupAudit]
 ON
@@ -49,9 +50,9 @@ AS
 BEGIN
  UPDATE [s]
 SET
-	[s].[CreatedBy] = CURRENT_USER,
+	[s].[CreatedBy] =  (CAST(SUBSTRING(CAST(SUSER_SID() AS varbinary(85)), 1, 16) AS uniqueidentifier)),
 	[s].[CreatedDateTime] = GETDATE(),
-	[s].[ModifiedBy] = CURRENT_USER,
+	[s].[ModifiedBy] =  (CAST(SUBSTRING(CAST(SUSER_SID() AS varbinary(85)), 1, 16) AS uniqueidentifier)),
 	[s].[ModifiedDateTime] = GETDATE ()
 FROM
 	[dbo].[StudentGroup] [s]
@@ -60,21 +61,21 @@ JOIN
 END;
 
 ALTER TABLE [dbo].[Hobbie]
-ADD CONSTRAINT [Hobbie_CreatedBy] DEFAULT CURRENT_USER FOR [CreatedBy],
+ADD CONSTRAINT [Hobbie_CreatedBy] DEFAULT (CAST(SUBSTRING(CAST(SUSER_SID() AS varbinary(85)), 1, 16) AS uniqueidentifier)) FOR [CreatedBy],
 	CONSTRAINT [Hobbie_CreatedDateTime] DEFAULT GETDATE() FOR [CreatedDateTime],
-	CONSTRAINT [Hobbie_ModifiedBy] DEFAULT CURRENT_USER FOR [ModifiedBy],
+	CONSTRAINT [Hobbie_ModifiedBy]  DEFAULT (CAST(SUBSTRING(CAST(SUSER_SID() AS varbinary(85)), 1, 16) AS uniqueidentifier)) FOR [ModifiedBy],
 	CONSTRAINT [Hobbie_ModifiedDateTime] DEFAULT GETDATE() FOR [ModifiedDateTime];
 
 
 ALTER TABLE [dbo].[Subject]
-ADD CONSTRAINT [Subject_CreatedBy] DEFAULT CURRENT_USER FOR [CreatedBy],
+ADD CONSTRAINT [Subject_CreatedBy] DEFAULT (CAST(SUBSTRING(CAST(SUSER_SID() AS varbinary(85)), 1, 16) AS uniqueidentifier)) FOR [CreatedBy],
 	CONSTRAINT [Subject_CreatedDateTime] DEFAULT GETDATE() FOR [CreatedDateTime],
-	CONSTRAINT [Subject_ModifiedBy DEFALT] DEFAULT CURRENT_USER FOR [ModifiedBy],
+	CONSTRAINT [Subject_ModifiedBy DEFALT] DEFAULT (CAST(SUBSTRING(CAST(SUSER_SID() AS varbinary(85)), 1, 16) AS uniqueidentifier)) FOR [ModifiedBy],
 	CONSTRAINT [Subject_ModifiedDateTime] DEFAULT GETDATE() FOR [ModifiedDateTime];
 
 IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'TeacherLogin')
 BEGIN
-    CREATE LOGIN [TeacherLogin] WITH PASSWORD = 'Teacher'; -- Замініть 'StrongPassword' на реальний пароль
+    CREATE LOGIN [TeacherLogin] WITH PASSWORD = 'Teacher'; 
 END
 
 IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'TeacherUser' AND type = 'S')
@@ -107,3 +108,4 @@ END
 ALTER ROLE [Administrator] ADD MEMBER [AdministratorLogin];
 ALTER ROLE [Teacher] ADD MEMBER [TeacherLogin];
 ALTER ROLE [Student] ADD MEMBER [StudentLogin];
+
