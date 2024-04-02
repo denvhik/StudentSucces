@@ -2,8 +2,9 @@
 using System;
 using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
+using ADONET.ViewService;
 namespace ADO_NET.ViewService;
-public class CallView
+public class CallView:ICallView
 {
     private readonly IConfiguration _configuration;
     public CallView(IConfiguration configuration)

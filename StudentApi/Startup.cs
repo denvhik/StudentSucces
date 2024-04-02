@@ -1,4 +1,5 @@
 ﻿using ADO_NET.ViewService;
+using ADONET.ViewService;
 using BLL.MappingProfiles;
 using BLL.Services.StudentService;
 using DAL.Models;
@@ -38,7 +39,7 @@ public class Startup
         services.AddScoped<IStudentService, StudentService>();
         services.AddScoped<GenericRepository<Student>>();
         services.AddScoped<ICallStoredProcedureRepository,CallStoredProcedureRepository>();
-        services.AddScoped<CallView>();
+        services.AddScoped<ICallView, CallView>();
         services.AddSingleton<IConfiguration>(provider=>config);
         services.AddLogging(loggingbuilder => loggingbuilder.AddSerilog());
     }
