@@ -8,8 +8,8 @@ namespace StudentApi;
 public class MainMenu
 {
     private readonly IStudentService _studentService;
-    private readonly CallView _callView;
-    public MainMenu(IStudentService studentService, CallView callView)
+    private readonly CallViewService _callView;
+    public MainMenu(IStudentService studentService, CallViewService callView)
     {
         _studentService = studentService;
         _callView = callView;

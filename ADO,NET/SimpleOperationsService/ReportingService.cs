@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace ADONET.SimpleOperationsService;
 
-public class Reporting : IReporting
+public class ReportingService : IReportingService
 {
     private readonly IConfiguration _configuration;
-    public Reporting(IConfiguration configuration) 
+    public ReportingService(IConfiguration configuration) 
     {
         _configuration = configuration;
     }

@@ -23,7 +23,7 @@ public partial class Student
 
     public string Gender { get; set; } 
 
-    public string? MaritalStatus { get; set; }
+    public string MaritalStatus { get; set; }
 
     public DateTime CreatedDateTime { get; set; }
 

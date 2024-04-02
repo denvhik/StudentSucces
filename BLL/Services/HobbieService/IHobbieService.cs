@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BLL.Services.HobbieService
+﻿using BLL.StudentDto;
+namespace BLL.Services.HobbieService;
+public interface IHobbieService
 {
-    internal interface IHobbieService
-    {
-    }
+    Task<IEnumerable<HobbieDTO>> GetHobbieAsync();
+    Task AddHobbieAsync(HobbieDTO student);
+    Task UpgradeHobbieAsync(int id, HobbieDTO studentDTO);
+    Task<bool> DeleteHobbieAsync(int id);
 }

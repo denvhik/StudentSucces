@@ -4,10 +4,10 @@ using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 using ADONET.ViewService;
 namespace ADO_NET.ViewService;
-public class CallView:ICallView
+public class CallViewService:ICallViewService
 {
     private readonly IConfiguration _configuration;
-    public CallView(IConfiguration configuration)
+    public CallViewService(IConfiguration configuration)
     {
         _configuration = configuration;
     }
