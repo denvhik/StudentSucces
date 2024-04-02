@@ -1,5 +1,6 @@
 ﻿using BLL.Services.StudentService;
 using BLL.StudentDto;
+using ADO_NET.ViewService;
 
 
 namespace StudentApi;
@@ -7,10 +8,11 @@ namespace StudentApi;
 public class MainMenu
 {
     private readonly IStudentService _studentService;
-
-    public MainMenu(IStudentService studentService)
+    private readonly CallView _callView;
+    public MainMenu(IStudentService studentService, CallView callView)
     {
         _studentService = studentService;
+        _callView = callView;
     }
 
     public async Task ShowMenu()
@@ -26,6 +28,7 @@ public class MainMenu
             Console.WriteLine("7. Insert Students Dormitory Procedure");
             Console.WriteLine("8. Overdue Book Report");
             Console.WriteLine("9. Sort Student Rating");
+            Console.WriteLine("10. Get Student by group");
             Console.WriteLine("0. Exit");
             Console.Write("Enter your choice: ");
 
@@ -59,6 +62,9 @@ public class MainMenu
                     break;
                 case "9":
                     await ShowStudentRatings();
+                    break;
+                case "10":
+                    await CallView();
                     break;
                 case "0":
                     Console.WriteLine("Exiting...");
@@ -225,5 +231,9 @@ public class MainMenu
         {
             Console.WriteLine("Student with the provided ID not found.");
         }
+    }
+    private  async Task  CallView() 
+    {
+       await  _callView.ReadDataFromView();
     }
 }

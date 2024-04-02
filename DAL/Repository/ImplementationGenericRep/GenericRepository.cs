@@ -77,11 +77,11 @@ public class GenericRepository<T> : IGenericReposotiry<T> where T : class
     {
         try
         {
-
             _dbSet.Update(entity);
             await _studentSuccesContext.SaveChangesAsync();
             return entity;
-        } catch (Exception ex) 
+        } 
+        catch (Exception ex) 
         {
             throw SystemExeptionHandle.FromSystemException(ex);
         }

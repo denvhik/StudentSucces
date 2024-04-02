@@ -14,8 +14,8 @@ public class StudentService : IStudentService
     private readonly ILogger<StudentService> _logger;
     private readonly IMapper _mapper;
     private readonly GenericRepository<Student> _genericRepository;
-    private readonly CallStoredProcedureRepository _callStoredProcedureRepository;
-    public StudentService(GenericRepository<Student> genericRepository,IMapper mapper,CallStoredProcedureRepository callStoredProcedureRepository, ILogger<StudentService> logger)
+    private readonly ICallStoredProcedureRepository _callStoredProcedureRepository;
+    public StudentService(GenericRepository<Student> genericRepository,IMapper mapper,ICallStoredProcedureRepository callStoredProcedureRepository, ILogger<StudentService> logger)
     {
         _callStoredProcedureRepository = callStoredProcedureRepository;
         _mapper = mapper;
@@ -92,11 +92,20 @@ public class StudentService : IStudentService
             _logger.LogInformation("start method UpgradeStudentAsync");
             var studentById = await _genericRepository.GetByIdAsync(id);
             _logger.LogInformation($"{studentById}");
-            if (studentById != null) return;
-            Student updateStudent = _mapper.Map<Student>(studentDTO);
-            await _genericRepository.UpdateAsync(updateStudent);
-            _logger.LogInformation($"{updateStudent}");
-            await _genericRepository.SaveChangesAsync();
+            if (studentById == null) return;
+            studentDTO.Id = studentById.StudentId;
+            studentById.TicketNumber = studentDTO.TicketNumber;
+            studentById.FirstName = studentDTO.FirstName;
+            studentById.LastName = studentDTO.LastName;
+            studentById.MiddleName = studentDTO.MiddleName;
+            studentById.MaritalStatus = studentDTO.MaritalStatus;
+            studentById.BirthYear = studentDTO.BirthYear;
+            studentById.BirthPlace = studentDTO.BirthPlace;
+            studentById.Gender = studentDTO.Gender;
+            studentById.Address = studentDTO.Address;
+            await _genericRepository.UpdateAsync(studentById);
+            _logger.LogInformation($"{studentById}");
+      
         }
         catch (SqlException ex)
         {
@@ -112,9 +121,16 @@ public class StudentService : IStudentService
     {
         try
         {
-            _logger.LogInformation("start method CallCalculateScholarshipForAllStudentAsync");
-            await _callStoredProcedureRepository.CallCalculateScholarshipForAllStudentAsync(month, year);
-            _logger.LogInformation("end method CallCalculateScholarshipForAllStudentAsync");
+            if (month > 0 || month <= 12)
+            {
+                _logger.LogInformation("start method CallCalculateScholarshipForAllStudentAsync");
+                await _callStoredProcedureRepository.CallCalculateScholarshipForAllStudentAsync(month, year);
+                _logger.LogInformation("end method CallCalculateScholarshipForAllStudentAsync");
+            }
+            else 
+            {
+                return;
+            }
         }
         catch (SqlException ex)
         {

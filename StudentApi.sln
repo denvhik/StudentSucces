@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAL", "DAL\DAL.csproj", "{1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLL", "BLL\BLL.csproj", "{E2BDEB75-F271-41D0-9A65-D46914208BCE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADONET", "ADO,NET\ADONET.csproj", "{B536072E-1711-44AF-A943-7365821CBF0A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{E2BDEB75-F271-41D0-9A65-D46914208BCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2BDEB75-F271-41D0-9A65-D46914208BCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E2BDEB75-F271-41D0-9A65-D46914208BCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B536072E-1711-44AF-A943-7365821CBF0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B536072E-1711-44AF-A943-7365821CBF0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B536072E-1711-44AF-A943-7365821CBF0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B536072E-1711-44AF-A943-7365821CBF0A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

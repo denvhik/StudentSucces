@@ -9,7 +9,6 @@ public class SystemExeptionHandle: Exception
 
     public static SystemExeptionHandle FromSystemException(Exception ex)
     {
-     
         return new SystemExeptionHandle("The operation failed. Please try again or contact your administrator.", ex);
     }
 }

@@ -1,4 +1,5 @@
-﻿using BLL.Services.StudentService;
+﻿using ADO_NET.ViewService;
+using BLL.Services.StudentService;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +14,8 @@ public class Program
         startup.ConfigureServices(serviceCollection);
         ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
         IStudentService studentService = serviceProvider.GetRequiredService<IStudentService>();
-        MainMenu menuService = new (studentService);
+        CallView callView = serviceProvider.GetRequiredService<CallView>();
+        MainMenu menuService = new (studentService,callView);
         await menuService.ShowMenu();
 
     }

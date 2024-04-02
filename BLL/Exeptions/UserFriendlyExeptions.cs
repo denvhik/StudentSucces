@@ -20,6 +20,6 @@ public class UserFriendlyException : Exception
 
     public static SystemExeptionHandle FromException(Exception ex)
     {
-       return SystemExeptionHandle.FromSystemException( ex);
+        return SystemExeptionHandle.FromSystemException(ex);
     }
 }

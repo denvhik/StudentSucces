@@ -1,4 +1,5 @@
-﻿using BLL.MappingProfiles;
+﻿using ADO_NET.ViewService;
+using BLL.MappingProfiles;
 using BLL.Services.StudentService;
 using DAL.Models;
 using DAL.Repository.Implementation;
@@ -36,7 +37,8 @@ public class Startup
         services.AddAutoMapper(typeof(StudentApiProfile));
         services.AddScoped<IStudentService, StudentService>();
         services.AddScoped<GenericRepository<Student>>();
-        services.AddScoped<CallStoredProcedureRepository>();
+        services.AddScoped<ICallStoredProcedureRepository,CallStoredProcedureRepository>();
+        services.AddScoped<CallView>();
         services.AddSingleton<IConfiguration>(provider=>config);
         services.AddLogging(loggingbuilder => loggingbuilder.AddSerilog());
     }
