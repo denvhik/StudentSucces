@@ -2,6 +2,7 @@
 using System;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using System.Threading.Tasks;
 
 
 
@@ -15,9 +16,9 @@ public class Reporting : IReporting
         _configuration = configuration;
     }
 
-    public DataTable GetGroupAverageScores()
+    public async Task<DataTable> GetGroupAverageScores()
     {
-        DataTable dataTable = new DataTable();
+        DataTable dataTable = new ();
         string query = @"
             SELECT
                 [sg].[GroupID],
@@ -30,16 +31,35 @@ public class Reporting : IReporting
 
         using (SqlConnection connection = new SqlConnection(_configuration["ConnectionStrings:StudentConnections"]))
         {
-            connection.Open();
-            SqlCommand command = new SqlCommand(query, connection);
-            SqlDataAdapter adapter = new SqlDataAdapter(command);
-             adapter.Fill(dataTable);
+           await connection.OpenAsync();
+            SqlCommand command = new (query, connection);
+            SqlDataAdapter adapter = new (command);
+            await Task.Run(() => adapter.Fill(dataTable));
         }
         return dataTable;
     }
 
-    public DataTable GetStudentsInDormitories()
+    public  async Task<DataTable> GetStudentsInDormitories()
     {
-        throw new NotImplementedException();
+        DataTable dataTable = new();
+        string query  = @"
+            SELECT [s].*
+            FROM (
+                SELECT [s].*
+                FROM
+                    [dbo].[Student] [s]
+                INNER JOIN 
+                    [dbo].[StudentsDormitory] [sd] ON [s].[StudentID] = [sd].[StudentID]
+                WHERE 
+                    [sd].[DormitoryID] BETWEEN 2 AND 4
+            ) AS [s]";
+        using (SqlConnection connection = new(_configuration["ConnectionStrings:StudentConnections"]))
+        {
+           await connection.OpenAsync();
+            SqlCommand sqlCommand = new (query, connection);
+            SqlDataAdapter adapter = new (sqlCommand);
+            await Task.Run(()=> adapter.Fill(dataTable));
+        }
+        return dataTable ;
     }
 }
