@@ -12,10 +12,8 @@ public class HobbieService : IHobbieService
     private readonly ILogger<HobbieService> _logger;
     private readonly IMapper _mapper;
     private readonly GenericRepository<Hobbie> _genericRepository;
-    private readonly ICallStoredProcedureRepository _callStoredProcedureRepository;
-    public HobbieService(GenericRepository<Hobbie> genericRepository, IMapper mapper, ICallStoredProcedureRepository callStoredProcedureRepository, ILogger<HobbieService> logger)
+    public HobbieService(GenericRepository<Hobbie> genericRepository, IMapper mapper, ILogger<HobbieService> logger)
     {
-        _callStoredProcedureRepository = callStoredProcedureRepository;
         _mapper = mapper;
         _genericRepository = genericRepository;
         _logger = logger;
