@@ -1,4 +1,5 @@
 ﻿using ADO_NET.ViewService;
+using ADONET.CallReportingService;
 using ADONET.SimpleOperationsService;
 using ADONET.ViewService;
 using BLL.MappingProfiles;
@@ -42,6 +43,7 @@ public class Startup
         services.AddScoped<ICallStoredProcedureRepository,CallStoredProcedureRepository>();
         services.AddScoped<ICallViewService, CallViewService>();
         services.AddScoped<IReportingService, ReportingService>();
+        services.AddScoped<IDbSetView, DbsetView>();
         services.AddSingleton<IConfiguration>(provider=>config);
         services.AddLogging(loggingbuilder => loggingbuilder.AddSerilog());
     }

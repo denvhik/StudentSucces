@@ -14,7 +14,7 @@ public class ReportingService : IReportingService
         _configuration = configuration;
     }
 
-    public async Task<DataTable> GetGroupAverageScores()
+    public async Task<DataTable> GetGroupAverageScoresAsync()
     {
         DataTable dataTable = new ();
         string query = @"
@@ -41,7 +41,7 @@ public class ReportingService : IReportingService
     }
 
 
-    public  async Task<DataTable> GetStudentsInDormitories()
+    public  async Task<DataTable> GetStudentsInDormitoriesAsync()
     {
         DataTable dataTable = new();
         string query  = @"

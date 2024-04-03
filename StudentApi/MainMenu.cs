@@ -1,6 +1,8 @@
 ﻿using BLL.Services.StudentService;
 using BLL.StudentDto;
-using ADO_NET.ViewService;
+using ADONET.ViewService;
+using ADONET.CallReportingService;
+using ADONET.ReportingDTO;
 
 
 namespace StudentApi;
@@ -8,17 +10,20 @@ namespace StudentApi;
 public class MainMenu
 {
     private readonly IStudentService _studentService;
-    private readonly CallViewService _callView;
-    public MainMenu(IStudentService studentService, CallViewService callView)
+    private readonly ICallViewService _callView;
+    private readonly IDbSetView _dbSetView;
+    public MainMenu(IStudentService studentService, ICallViewService callView, IDbSetView dbSetView)
     {
         _studentService = studentService;
         _callView = callView;
+        _dbSetView = dbSetView;
     }
 
     public async Task ShowMenu()
     {
         while (true)
         {
+            Console.WriteLine("----------------------------------------------");
             Console.WriteLine("1. Add Student");
             Console.WriteLine("2. Delete Student");
             Console.WriteLine("3. Get Students");
@@ -29,11 +34,13 @@ public class MainMenu
             Console.WriteLine("8. Overdue Book Report");
             Console.WriteLine("9. Sort Student Rating");
             Console.WriteLine("10. Get Student by group");
+            Console.WriteLine("11. Get Average Score by student group");
+            Console.WriteLine("12. Get student by their dormitory");
             Console.WriteLine("0. Exit");
             Console.Write("Enter your choice: ");
-
+           
             var choice = Console.ReadLine();
-
+            Console.WriteLine("-----------------------------------------------");
             switch (choice)
             {
                 case "1":
@@ -46,7 +53,7 @@ public class MainMenu
                     await ShowStudents();
                     break;
                 case "4":
-                   await UpgradeStudent();
+                    await UpgradeStudent();
                     break;
                 case "5":
                     await CalculateScholarship();
@@ -65,6 +72,12 @@ public class MainMenu
                     break;
                 case "10":
                     await CallView();
+                    break;
+                case "11":
+                    await GetAverageScoreinStudentGroup();
+                    break;
+                case "12":
+                    await GetStudentByDormitoryName();
                     break;
                 case "0":
                     Console.WriteLine("Exiting...");
@@ -174,10 +187,10 @@ public class MainMenu
         Console.Write("Enter student ID to delete: ");
         var idToDelete = int.Parse(Console.ReadLine());
 
-    
+
         bool isDeleted = await _studentService.DeleteStudentAsync(idToDelete);
 
-      
+
         if (isDeleted)
         {
             Console.WriteLine("Student deleted successfully.");
@@ -232,8 +245,27 @@ public class MainMenu
             Console.WriteLine("Student with the provided ID not found.");
         }
     }
-    private  async Task  CallView() 
+    private async Task CallView()
     {
-       await  _callView.ReadDataFromView();
+        await _callView.ReadDataFromView();
+    }
+    private async Task GetAverageScoreinStudentGroup() 
+    {
+        var AverageScores = await _dbSetView.GetGroupAverageScoresAsync();
+
+        Console.WriteLine("{0,-20} {1,-20}", "Group Name", "Average Score");
+        foreach (var item in AverageScores)
+        {
+            Console.WriteLine("{0,-20} {1,-20}", item.GroupName, item.AverageScore);
+        }
+    }
+    private async Task GetStudentByDormitoryName()
+    {
+        var StudentDormitoryName = await _dbSetView.StudentDormitoryNameAsync();
+        Console.WriteLine("{0,-20} {1,-20} {2,-20}", "First Name", "Last Name", "Dormitory Name");
+        foreach (var item in StudentDormitoryName)
+        {
+            Console.WriteLine("{0,-20} {1,-20} {2,-20}", item.FirstName, item.LastName, item.DormitoryName);
+        }
     }
 }

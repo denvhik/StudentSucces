@@ -1,10 +1,10 @@
-﻿
-using ADONET.ReportingDTO;
+﻿using ADONET.ReportingDTO;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ADONET.CallReportingService;
 public interface IDbSetView
 {
-    public Task<AverageScoreDTO> GetGroupAverageScoresAsync();
-    public Task<StudentDormitoryDTO> StudentDormitoryNameAsync();
+    public Task <List<AverageScoreDTO>> GetGroupAverageScoresAsync();
+    public Task<List<StudentDormitoryDTO>> StudentDormitoryNameAsync();
 }
