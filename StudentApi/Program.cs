@@ -16,7 +16,7 @@ public class Program
         ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
         IStudentService studentService = serviceProvider.GetRequiredService<IStudentService>();
         ICallViewService callView = serviceProvider.GetRequiredService<ICallViewService>();
-        IDbSetView dbSetView = serviceProvider.GetService<IDbSetView>();
+        IDbSetView dbSetView = serviceProvider.GetRequiredService<IDbSetView>();
         MainMenu menuService = new (studentService,callView, dbSetView);
         await menuService.ShowMenu();
 

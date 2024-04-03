@@ -3,6 +3,7 @@ using ADONET.CallReportingService;
 using ADONET.SimpleOperationsService;
 using ADONET.ViewService;
 using BLL.MappingProfiles;
+using BLL.Services.HobbieService;
 using BLL.Services.StudentService;
 using DAL.Models;
 using DAL.Repository.Implementation;
@@ -38,12 +39,21 @@ public class Startup
         services.AddDbContext<StudentSuccesContext>(options =>
         options.UseSqlServer(config["ConnectionStrings:StudentConnections"]));
         services.AddAutoMapper(typeof(StudentApiProfile));
+        //-----------------------BLL---------------------------//
         services.AddScoped<IStudentService, StudentService>();
+        services.AddScoped<IHobbieService, HobbieService>();
+        
+
+
+        //-----------------------DAL---------------------------//
         services.AddScoped<GenericRepository<Student>>();
         services.AddScoped<ICallStoredProcedureRepository,CallStoredProcedureRepository>();
+
+        //-----------------------ADONET---------------------------//
         services.AddScoped<ICallViewService, CallViewService>();
         services.AddScoped<IReportingService, ReportingService>();
         services.AddScoped<IDbSetView, DbsetView>();
+
         services.AddSingleton<IConfiguration>(provider=>config);
         services.AddLogging(loggingbuilder => loggingbuilder.AddSerilog());
     }

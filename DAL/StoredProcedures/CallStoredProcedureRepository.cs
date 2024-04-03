@@ -16,6 +16,28 @@ public class CallStoredProcedureRepository : ICallStoredProcedureRepository
     {
         _configuration = configuration;
     }
+
+    public async Task<List<ScholarshipDTO>> CallCalculateAcholarshipForStudentAsync(int studentID, int month, int year)
+    {
+        try
+        {
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("StudentConnections")))
+            {
+                var parametrs = new DynamicParameters();
+                parametrs.Add("@StudentID", studentID);
+                parametrs.Add("@Month", month);
+                parametrs.Add("Year", year);
+
+                var result = await connection.QueryAsync<ScholarshipDTO>("CalculateScholarshipForStudent", parametrs, commandType: CommandType.StoredProcedure);
+                return result.ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            throw SystemExeptionHandle.FromSystemException(ex);
+        }
+    }
+
     public async Task<List<ScholarshipDTO>> CallCalculateScholarshipForAllStudentAsync(int month, int year)
     {
         try

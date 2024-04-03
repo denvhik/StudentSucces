@@ -41,18 +41,68 @@ public class HobbieService : IHobbieService
         }
     }
 
-    public Task<bool> DeleteHobbieAsync(int id)
+    public async Task<bool> DeleteHobbieAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            //_logger.LogInformation($"start method DeleteHobbieAsync");
+            await _genericRepository.DeleteByIdAsync(id);
+            //_logger.LogInformation($"Deleted {id}");
+            await _genericRepository.SaveChangesAsync();
+            return true;
+        }
+        catch (SqlException ex)
+        {
+            throw UserFriendlyException.FromSqlException(ex);
+        }
+        catch (Exception ex)
+        {
+            throw UserFriendlyException.FromException(ex);
+        }
     }
 
-    public Task<IEnumerable<HobbieDTO>> GetHobbieAsync()
+    public async Task<IEnumerable<HobbieDTO>> GetHobbieAsync()
     {
-        throw new NotImplementedException();
+        try
+        {
+            _logger.LogInformation("Початок методу GetStudentAsync");
+            var Hobbies = await _genericRepository.GetAllAsync();
+            _logger.LogInformation($"Student: {Hobbies}");
+            var HobieDTO = _mapper.Map<IEnumerable<HobbieDTO>>(Hobbies);
+            _logger.LogInformation($"Student: {HobieDTO}");
+            return HobieDTO;
+        }
+        catch (SqlException ex)
+        {
+            throw UserFriendlyException.FromSqlException(ex);
+        }
+        catch (Exception ex)
+        {
+            throw UserFriendlyException.FromException(ex);
+        }
     }
 
-    public Task UpgradeHobbieAsync(int id, HobbieDTO studentDTO)
+    public  async Task UpgradeHobbieAsync(int id, HobbieDTO HobbieDTO)
     {
-        throw new NotImplementedException();
+        try
+        {
+            _logger.LogInformation("start method UpgradeStudentAsync");
+            var HobbieById = await _genericRepository.GetByIdAsync(id);
+            _logger.LogInformation($"{HobbieById}");
+            if (HobbieById == null) return;
+            HobbieDTO.Id = HobbieById.HobbyId;
+            HobbieById.HobbyName = HobbieDTO.HobbyName;
+            await _genericRepository.UpdateAsync(HobbieById);
+            _logger.LogInformation($"{HobbieById}");
+
+        }
+        catch (SqlException ex)
+        {
+            throw UserFriendlyException.FromSqlException(ex);
+        }
+        catch (Exception ex)
+        {
+            throw UserFriendlyException.FromException(ex);
+        }
     }
 }
