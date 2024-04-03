@@ -16,11 +16,11 @@ namespace StudentApi;
 
 public class Startup
 {
-    public IConfiguration _Configuration { get; }
+    public IConfiguration Configuration { get; }
 
     public Startup(IConfiguration configuration)
     {
-        _Configuration = configuration;
+        Configuration = configuration;
     }
 
     public void ConfigureServices(IServiceCollection services)
@@ -31,7 +31,7 @@ public class Startup
            .Build();
        
         var logConfiguration = new LoggerConfiguration()
-        .ReadFrom.Configuration(_Configuration)
+        .ReadFrom.Configuration(Configuration)
         .WriteTo.File("Logs/applog-.txt", rollingInterval: RollingInterval.Day);
 
         Log.Logger = logConfiguration.CreateLogger();
