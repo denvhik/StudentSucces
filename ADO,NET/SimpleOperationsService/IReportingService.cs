@@ -4,6 +4,6 @@ namespace ADONET.SimpleOperationsService;
 
 public interface IReportingService
 {
-    public Task <DataTable> GetGroupAverageScores();
-    public Task<DataTable> GetStudentsInDormitories();
+    public Task <DataTable> GetGroupAverageScoresAsync();
+    public Task<DataTable> GetStudentsInDormitoriesAsync();
 }
