@@ -40,7 +40,7 @@ public class GenericRepository<T> : IGenericReposotiry<T> where T : class
             }
             return deleted;
         }
-        catch (Exception ex) 
+        catch (Exception ex)               
         {
             throw SystemExeptionHandle.FromSystemException(ex);
         }

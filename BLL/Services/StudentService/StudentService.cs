@@ -14,13 +14,15 @@ public class StudentService : IStudentService
     private readonly ILogger<StudentService> _logger;
     private readonly IMapper _mapper;
     private readonly GenericRepository<Student> _genericRepository;
+    private readonly GenericRepository<StudentBook> _studentBookRepository;
     private readonly ICallStoredProcedureRepository _callStoredProcedureRepository;
-    public StudentService(GenericRepository<Student> genericRepository,IMapper mapper,ICallStoredProcedureRepository callStoredProcedureRepository, ILogger<StudentService> logger)
+    public StudentService(GenericRepository<Student> genericRepository,IMapper mapper,ICallStoredProcedureRepository callStoredProcedureRepository, ILogger<StudentService> logger,GenericRepository<StudentBook> studentBookRepository)
     {
         _callStoredProcedureRepository = callStoredProcedureRepository;
         _mapper = mapper;
         _genericRepository = genericRepository;
         _logger = logger;
+        _studentBookRepository = studentBookRepository;
     }
 
     public async Task AddStudentAsync(StudentDTO studentDto)
@@ -227,6 +229,26 @@ public class StudentService : IStudentService
             return result;
         }
         catch (SqlException ex)
+        {
+            throw UserFriendlyException.FromSqlException(ex);
+        }
+        catch (Exception ex)
+        {
+            throw UserFriendlyException.FromException(ex);
+        }
+    }
+    public async Task<bool> ReturningBook(int studentId,int bookId,DateTime EndTime)
+    {
+        try
+        {
+            var studentbook = await _studentBookRepository.GetByIdAsync(studentId);
+            studentbook.BookId = bookId;
+            studentbook.StudentId = studentId;
+            studentbook.CheckEndDate = EndTime;
+            await _studentBookRepository.UpdateAsync(studentbook);
+            return true;
+        }
+        catch (SqlException ex) 
         {
             throw UserFriendlyException.FromSqlException(ex);
         }

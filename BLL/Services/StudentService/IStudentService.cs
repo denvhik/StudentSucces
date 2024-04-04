@@ -13,6 +13,5 @@ public interface IStudentService
     Task CallInsertStudentsDormitoryProcedureAsync();
     Task <IEnumerable<OverdueBookReportDTO>> CallOverdueBookReportAsync();
     Task  <IEnumerable<StudentRatingResult>>CallSortStudentRatingAsync();
-
-
+    Task<bool> ReturningBook(int studentId,int bookId,DateTime dateTime);
 }
