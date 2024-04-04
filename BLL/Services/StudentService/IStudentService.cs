@@ -1,9 +1,6 @@
 ﻿using BLL.StudentDto;
 using DAL.StoredProcedureDTO;
-
-
 namespace BLL.Services.StudentService;
-
 public interface IStudentService
 {
     Task<IEnumerable<StudentDTO>> GetStudentAsync();
@@ -16,5 +13,6 @@ public interface IStudentService
     Task CallInsertStudentsDormitoryProcedureAsync();
     Task <IEnumerable<OverdueBookReportDTO>> CallOverdueBookReportAsync();
     Task  <IEnumerable<StudentRatingResult>>CallSortStudentRatingAsync();
+
 
 }
