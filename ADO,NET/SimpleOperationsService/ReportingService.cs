@@ -2,6 +2,7 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
+using System;
 
 namespace ADONET.SimpleOperationsService;
 public class ReportingService : IReportingService
@@ -14,8 +15,10 @@ public class ReportingService : IReportingService
 
     public async Task<DataTable> GetGroupAverageScoresAsync()
     {
-        DataTable dataTable = new ();
-        string query = @"
+        try
+        {
+            DataTable dataTable = new();
+            string query = @"
             SELECT 
                  g.[GroupName], 
                  AVG([ss].[Score]) AS AverageScore
@@ -28,19 +31,31 @@ public class ReportingService : IReportingService
             GROUP BY
                   g.[GroupName] ";
 
-        using (SqlConnection connection = new SqlConnection(_configuration["ConnectionStrings:StudentConnections"]))
-        {
-            await connection.OpenAsync();
-            SqlCommand command = new (query, connection);
-            SqlDataAdapter adapter = new (command);
-            await Task.Run(() => adapter.Fill(dataTable));
+            using (SqlConnection connection = new SqlConnection(_configuration["ConnectionStrings:StudentConnections"]))
+            {
+                await connection.OpenAsync();
+                SqlCommand command = new(query, connection);
+                SqlDataAdapter adapter = new(command);
+                await Task.Run(() => adapter.Fill(dataTable));
+            }
+            return dataTable;
         }
-        return dataTable;
+        catch (SqlException ex) 
+        {
+            throw UserFriendlyException.FromSqlException(ex);
+        }
+        catch (Exception ex)
+        {
+            throw UserFriendlyException.FromException(ex);
+        }
+
     }
     public  async Task<DataTable> GetStudentsInDormitoriesAsync()
     {
-        DataTable dataTable = new();
-        string query  = @"
+        try
+        {
+            DataTable dataTable = new();
+            string query = @"
                 SELECT 
                     [s].FirstName,
                     [s].LastName,
@@ -55,13 +70,22 @@ public class ReportingService : IReportingService
                 INNER JOIN 
                     [dbo].[Dormitory] [d] ON [s].[DormitoryID] = [d].[DormitoryID]";
 
-        using (SqlConnection connection = new(_configuration["ConnectionStrings:StudentConnections"]))
-        {
-           await connection.OpenAsync();
-            SqlCommand sqlCommand = new (query, connection);
-            SqlDataAdapter adapter = new (sqlCommand);
-            await Task.Run(()=> adapter.Fill(dataTable));
+            using (SqlConnection connection = new(_configuration["ConnectionStrings:StudentConnections"]))
+            {
+                await connection.OpenAsync();
+                SqlCommand sqlCommand = new(query, connection);
+                SqlDataAdapter adapter = new(sqlCommand);
+                await Task.Run(() => adapter.Fill(dataTable));
+            }
+            return dataTable;
         }
-        return dataTable;
+        catch (SqlException ex)
+        {
+            throw UserFriendlyException.FromSqlException(ex);
+        }
+        catch (Exception ex) 
+        {
+            throw UserFriendlyException.FromException(ex);
+        }
     }
 }
