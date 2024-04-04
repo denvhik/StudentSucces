@@ -4,7 +4,6 @@ using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 
 namespace ADONET.SimpleOperationsService;
-
 public class ReportingService : IReportingService
 {
     private readonly IConfiguration _configuration;
@@ -38,8 +37,6 @@ public class ReportingService : IReportingService
         }
         return dataTable;
     }
-
-
     public  async Task<DataTable> GetStudentsInDormitoriesAsync()
     {
         DataTable dataTable = new();
@@ -57,6 +54,7 @@ public class ReportingService : IReportingService
                 ) AS [s]
                 INNER JOIN 
                     [dbo].[Dormitory] [d] ON [s].[DormitoryID] = [d].[DormitoryID]";
+
         using (SqlConnection connection = new(_configuration["ConnectionStrings:StudentConnections"]))
         {
            await connection.OpenAsync();

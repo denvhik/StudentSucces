@@ -2,11 +2,8 @@
 using BLL.StudentDto;
 using ADONET.ViewService;
 using ADONET.CallReportingService;
-using ADONET.ReportingDTO;
-
 
 namespace StudentApi;
-
 public class MainMenu
 {
     private readonly IStudentService _studentService;
