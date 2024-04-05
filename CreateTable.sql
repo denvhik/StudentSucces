@@ -343,4 +343,10 @@ BEGIN
 	WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = [dbo].[TeacherSubjectHistory]));
 	END
 
-	ALTER TABLE [dbo].[StudentsDormitory]
+
+CREATE TABLE [dbo].[BookCopies] (
+    [BookID] INT NOT NULL,
+    [NumberOfCopies] INT NOT NULL DEFAULT 20, 
+    CONSTRAINT [PK_BookCopies_BookID] PRIMARY KEY ([BookID]),
+    CONSTRAINT [FK_BookCopies_BookID] FOREIGN KEY ([BookID]) REFERENCES [dbo].[Book]([BookID])
+);
