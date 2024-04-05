@@ -37,3 +37,24 @@ BEGIN
     END
 END;
 
+CREATE TRIGGER [tg_AddBookToBookCopies]
+ON [dbo].[Book]
+AFTER INSERT
+AS
+BEGIN
+    DECLARE @NewBookID INT;
+    SELECT @NewBookID = inserted.BookID FROM inserted;
+
+   
+    IF NOT EXISTS (SELECT * FROM [dbo].[BookCopies] WHERE [BookID] = @NewBookID)
+    BEGIN
+      
+        INSERT INTO [dbo].[BookCopies] ([BookID]) VALUES (@NewBookID);
+    END;
+END;
+ENABLE TRIGGER [tg_AddBookToBookCopies] ON [dbo].[Book];
+
+INSERT INTO [dbo].[BookCopies] ([BookID], [NumberOfCopies])
+SELECT [BookID], 20
+FROM [dbo].[Book];
+
