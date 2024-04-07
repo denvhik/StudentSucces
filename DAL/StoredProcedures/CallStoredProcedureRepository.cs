@@ -130,5 +130,24 @@ public class CallStoredProcedureRepository : ICallStoredProcedureRepository
         }
 
     }
+    public async Task <string> CallTakeBookProcedureAsync(int studentId, int bookId)
+    {
+        using var connection = new SqlConnection(_configuration.GetConnectionString("StudentConnections"));
+        var parameters = new DynamicParameters();
+        parameters.Add("@StudentID", studentId);
+        parameters.Add("@BookID", bookId);
+        parameters.Add("@ErrorMessage", dbType: DbType.String, direction: ParameterDirection.Output);
 
+        try
+        {
+            await connection.ExecuteAsync("Sp_TakeBook", parameters, commandType: CommandType.StoredProcedure);
+        }
+        catch (Exception ex)
+        {
+            throw SystemExeptionHandle.FromSystemException(ex);
+        }
+        var errorMessage = parameters.Get<string>("@ErrorMessage");
+        
+        return errorMessage;
+    }
 }

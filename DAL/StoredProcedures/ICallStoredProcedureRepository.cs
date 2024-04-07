@@ -7,5 +7,6 @@ public interface ICallStoredProcedureRepository
     Task<List<TopScoreResultDTO>> CallGetTopScoresProcedureAsync(int score);
     Task <bool> CallInsertStudentsDormitoryProcedureAsync();
     Task<List<StudentRatingResult>> CallSortStudentRatingAsync();
-    Task<List<OverdueBookReportDTO>> CallOverdueBookReportAsync();   
+    Task<List<OverdueBookReportDTO>> CallOverdueBookReportAsync();
+    Task <string>  CallTakeBookProcedureAsync(int studentId, int bookId);
 }
