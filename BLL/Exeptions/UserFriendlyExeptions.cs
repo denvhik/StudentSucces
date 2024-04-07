@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
 using DAL.SystemExeptionHandling;
-
 public class UserFriendlyException : Exception
 {
     public UserFriendlyException() : base() { }

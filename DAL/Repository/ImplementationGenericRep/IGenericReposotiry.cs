@@ -7,5 +7,4 @@ public interface IGenericReposotiry<T> where T : class
     Task<T> UpdateAsync(T entity);
     Task<T> DeleteByIdAsync(int id);
     Task SaveChangesAsync();
-
 }

@@ -7,7 +7,6 @@ using DAL.StoredProcedures;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 
-
 namespace BLL.Services.StudentService;
 public class StudentService : IStudentService
 {
@@ -246,6 +245,7 @@ public class StudentService : IStudentService
             studentbook.StudentId = studentId;
             studentbook.CheckEndDate = EndTime;
             await _studentBookRepository.UpdateAsync(studentbook);
+            _logger.LogInformation($"information about updating StudentBook:{studentbook}");
             return true;
         }
         catch (SqlException ex) 

@@ -16,6 +16,8 @@ public partial class StudentSuccesContext : DbContext
         _configuration = configuration;
     }
 
+    public virtual DbSet<BookCopy> BookCopies { get; set; }
+    public virtual DbSet<StudentDebt> StudentDebts { get; set; }
     public virtual DbSet<Book> Books { get; set; }
 
     public virtual DbSet<Dormitory> Dormitories { get; set; }
@@ -88,6 +90,57 @@ public partial class StudentSuccesContext : DbContext
             entity.Property(e => e.Title)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+        });
+        modelBuilder.Entity<BookCopy>(entity =>
+        {
+            entity.HasKey(e => e.BookId).HasName("PK_BookCopies_BookID");
+
+            entity.Property(e => e.BookId)
+                .ValueGeneratedNever()
+                .HasColumnName("BookID");
+            entity.Property(e => e.NumberOfCopies).HasDefaultValue(20);
+
+            entity.HasOne(d => d.Book).WithOne(p => p.BookCopy)
+                .HasForeignKey<BookCopy>(d => d.BookId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BookCopies_BookID");
+        });
+        modelBuilder.Entity<StudentDebt>(entity =>
+        {
+            entity.HasKey(e => e.StudentId).HasName("PK_StudentDebt_StudentID");
+
+            entity
+                .ToTable("StudentDebt")
+                .ToTable(tb => tb.IsTemporal(ttb =>
+                {
+                    ttb.UseHistoryTable("StudentDebtHistory", "dbo");
+                    ttb
+                        .HasPeriodStart("SysStartTime")
+                        .HasColumnName("SysStartTime");
+                    ttb
+                        .HasPeriodEnd("SysEndTime")
+                        .HasColumnName("SysEndTime");
+                }));
+
+            entity.Property(e => e.StudentId)
+                .ValueGeneratedNever()
+                .HasColumnName("StudentID");
+            entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.CreatedBy).HasDefaultValueSql("(0x00)");
+            entity.Property(e => e.CreatedDateTime)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DebtDate).HasColumnType("datetime");
+            entity.Property(e => e.ModifiedBy).HasDefaultValueSql("(0x00)");
+            entity.Property(e => e.ModifiedDateTime)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.PaymentDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Student).WithOne(p => p.StudentDebt)
+                .HasForeignKey<StudentDebt>(d => d.StudentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StudentDebt_StudentID");
         });
 
         modelBuilder.Entity<Dormitory>(entity =>

@@ -36,6 +36,7 @@ public partial class Student
     public virtual ICollection<GroupEnrollment> GroupEnrollments { get; set; } = new List<GroupEnrollment>();
 
     public virtual ICollection<StudentBook> StudentBooks { get; set; } = new List<StudentBook>();
+    public virtual StudentDebt StudentDebt { get; set; }
 
     public virtual ICollection<StudentGroup> StudentGroups { get; set; } = new List<StudentGroup>();
 
