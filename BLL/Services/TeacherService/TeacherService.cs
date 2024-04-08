@@ -11,8 +11,8 @@ public class TeacherService:ITeacherService
 {
     private readonly ILogger<TeacherService> _logger;
     private readonly IMapper _mapper;
-    private readonly GenericRepository<Teacher> _genericRepository;
-    public TeacherService(GenericRepository<Teacher> genericRepository, IMapper mapper, ILogger<TeacherService> logger)
+    private readonly IGenericRepository<Teacher> _genericRepository;
+    public TeacherService(IGenericRepository<Teacher> genericRepository, IMapper mapper, ILogger<TeacherService> logger)
     {
         _mapper = mapper;
         _genericRepository = genericRepository;

@@ -12,10 +12,10 @@ public class StudentService : IStudentService
 {
     private readonly ILogger<StudentService> _logger;
     private readonly IMapper _mapper;
-    private readonly GenericRepository<Student> _genericRepository;
-    private readonly GenericRepository<StudentBook> _studentBookRepository;
+    private readonly IGenericRepository<Student> _genericRepository;
+    private readonly IGenericRepository<StudentBook> _studentBookRepository;
     private readonly ICallStoredProcedureRepository _callStoredProcedureRepository;
-    public StudentService(GenericRepository<Student> genericRepository,IMapper mapper,ICallStoredProcedureRepository callStoredProcedureRepository, ILogger<StudentService> logger,GenericRepository<StudentBook> studentBookRepository)
+    public StudentService(IGenericRepository<Student> genericRepository,IMapper mapper,ICallStoredProcedureRepository callStoredProcedureRepository, ILogger<StudentService> logger,IGenericRepository<StudentBook> studentBookRepository)
     {
         _callStoredProcedureRepository = callStoredProcedureRepository;
         _mapper = mapper;
@@ -142,7 +142,6 @@ public class StudentService : IStudentService
             throw UserFriendlyException.FromException(ex);
         }
     }
-
     public  async Task <IEnumerable<TopScoreResultDTO>> CallGetTopScoresProcedureAsync(int score)
     {
         try

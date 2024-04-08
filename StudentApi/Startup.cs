@@ -1,7 +1,6 @@
-﻿using ADO_NET.ViewService;
-using ADONET.CallReportingService;
-using ADONET.SimpleOperationsService;
-using ADONET.ViewService;
+﻿using AdoNet.ViewService;
+using AdoNet.CallReportingService;
+using AdoNet.SimpleOperationsService;
 using BLL.MappingProfiles;
 using BLL.Services.HobbieService;
 using BLL.Services.StudentService;
@@ -12,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using System.IO;
 
 namespace StudentApi;
 
@@ -49,7 +49,7 @@ public class Startup
         services.AddScoped<GenericRepository<Student>>();
         services.AddScoped<ICallStoredProcedureRepository,CallStoredProcedureRepository>();
 
-        //-----------------------ADONET---------------------------//
+        //-----------------------AdoNet---------------------------//
         services.AddScoped<ICallViewService, CallViewService>();
         services.AddScoped<IReportingService, ReportingService>();
         services.AddScoped<IDbSetView, DbsetView>();

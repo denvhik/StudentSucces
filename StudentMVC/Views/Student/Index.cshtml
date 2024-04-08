@@ -1,0 +1,36 @@
+﻿@model IEnumerable<BLL.StudentDto.StudentDTO>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ім'я</th>
+            <th>Прізвище</th>
+            <th>По батькові</th>
+            <th>Номер білету</th>
+            <th>Рік народження</th>
+            <th>Місце народження</th>
+            <th>Адреса</th>
+            <th>Стать</th>
+            <th>Сімейний статус</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in Model)
+        {
+            <tr>
+                <td>@student.FirstName</td>
+                <td>@student.LastName</td>
+                <td>@student.MiddleName</td>
+                <td>@student.TicketNumber</td>
+                <td>@student.BirthYear</td>
+                <td>@student.BirthPlace</td>
+                <td>@student.Address</td>
+                <td>@student.Gender</td>
+                <td>@student.MaritalStatus</td>
+            </tr>
+        }
+    </tbody>
+  
+</table>
+<div style="color:darkgreen">
+    <button id="addStudentButton">Додати студента</button>
+</div>

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-namespace ADONET.ViewService;
+namespace AdoNet.ViewService;
 public interface ICallViewService
 {
     public Task ReadDataFromView();

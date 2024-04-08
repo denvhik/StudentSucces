@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BLL.Services.StudentDormitoryService
+﻿namespace BLL.Services.StudentDormitoryService;
+public class StudentDormitoryService:IStudentDormitoryService
 {
-    public class StudentDormitoryService
-    {
-    }
 }

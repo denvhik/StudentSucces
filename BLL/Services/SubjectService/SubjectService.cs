@@ -6,19 +6,19 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 namespace BLL.Services.SubjectService;
 
-public class SubjectService
+public class SubjectService:ISubjectService
 {
     private readonly ILogger<SubjectService> _logger;
     private readonly IMapper _mapper;
-    private readonly GenericRepository<Subject> _genericRepository;
+    private readonly IGenericRepository<Subject> _genericRepository;
 
-    public SubjectService(GenericRepository<Subject> genericRepository, IMapper mapper,  ILogger<SubjectService> logger)
+    public SubjectService(IGenericRepository<Subject> genericRepository, IMapper mapper,  ILogger<SubjectService> logger)
     {
         _mapper = mapper;
         _genericRepository = genericRepository;
         _logger = logger;
     }
-    public async Task AddSubjectAsync(Subject subjectDto)
+    public async Task AddSubjectAsync(SubjectDTO subjectDto)
     {
         try
         {

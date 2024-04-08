@@ -1,10 +1,10 @@
-﻿using ADONET.ReportingDTO;
-using ADONET.SimpleOperationsService;
+﻿using AdoNet.ReportingDTO;
+using AdoNet.SimpleOperationsService;
 using System.Collections.Generic;
 using System;
 using System.Data;
 using System.Threading.Tasks;
-namespace ADONET.CallReportingService;
+namespace AdoNet.CallReportingService;
 public class DbsetView : IDbSetView
 {
     private readonly IReportingService _reportingService;

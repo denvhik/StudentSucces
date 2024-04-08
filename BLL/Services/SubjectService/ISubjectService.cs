@@ -3,8 +3,8 @@ namespace BLL.Services.SubjectService;
 
 public interface ISubjectService
 {
-    Task<IEnumerable<SubjectDTO>> GetHobbieAsync();
-    Task AddHobbieAsync(SubjectDTO subject);
-    Task UpgradeHobbieAsync(int id, SubjectDTO subjectDTO);
-    Task<bool> DeleteHobbieAsync(int id);
+    Task<IEnumerable<SubjectDTO>> GetSubjectAsync();
+    Task AddSubjectAsync(SubjectDTO subject);
+    Task UpgradeSubjectAsync(int id, SubjectDTO subjectDTO);
+    Task<bool> DeleteSubjectAsync(int id);
 }

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using DAL.SystemExeptionHandling;
 
 namespace DAL.Repository.Implementation;
-public class GenericRepository<T> : IGenericReposotiry<T> where T : class
+public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
     private readonly StudentSuccesContext _studentSuccesContext;
     private readonly DbSet<T> _dbSet;

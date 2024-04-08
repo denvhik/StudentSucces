@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using System.Threading.Tasks;
-namespace ADONET.SimpleOperationsService;
+namespace AdoNet.SimpleOperationsService;
 
 public interface IReportingService
 {

@@ -4,7 +4,7 @@ using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 using System;
 
-namespace ADONET.SimpleOperationsService;
+namespace AdoNet.SimpleOperationsService;
 public class ReportingService : IReportingService
 {
     private readonly IConfiguration _configuration;

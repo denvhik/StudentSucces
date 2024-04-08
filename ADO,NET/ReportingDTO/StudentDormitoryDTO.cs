@@ -1,4 +1,4 @@
-﻿namespace ADONET.ReportingDTO;
+﻿namespace AdoNet.ReportingDTO;
 public class StudentDormitoryDTO
 {
     public string FirstName { get; set; } 

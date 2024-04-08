@@ -10,8 +10,8 @@ public class HobbieService : IHobbieService
 {
     private readonly ILogger<HobbieService> _logger;
     private readonly IMapper _mapper;
-    private readonly GenericRepository<Hobbie> _genericRepository;
-    public HobbieService(GenericRepository<Hobbie> genericRepository, IMapper mapper, ILogger<HobbieService> logger)
+    private readonly IGenericRepository<Hobbie> _genericRepository;
+    public HobbieService(IGenericRepository<Hobbie> genericRepository, IMapper mapper, ILogger<HobbieService> logger)
     {
         _mapper = mapper;
         _genericRepository = genericRepository;

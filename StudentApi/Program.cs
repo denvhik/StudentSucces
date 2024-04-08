@@ -1,9 +1,9 @@
-﻿using ADO_NET.ViewService;
-using ADONET.CallReportingService;
-using ADONET.ViewService;
+﻿using AdoNet.ViewService;
+using AdoNet.CallReportingService;
 using BLL.Services.StudentService;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 namespace StudentApi;
 public class Program
 {
