@@ -237,7 +237,7 @@ public class MainMenu
             Console.Write("Enter Marital Status: ");
             studentDto.MaritalStatus = Console.ReadLine();
 
-            await _studentService.UpgradeStudentAsync(idToUpgrade, studentDto);
+            //await _studentService.UpgradeStudentAsync(idToUpgrade, studentDto);
         }
         else
         {

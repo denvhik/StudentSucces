@@ -1,5 +1,8 @@
 ﻿@model IEnumerable<BLL.StudentDto.StudentDTO>
-<table class="table">
+<div>
+    <button id="addStudentButton" data-toggle="modal" data-target="#personalModal" class="add-btn">add student</button>
+</div>
+<table id="studentTable" class="table">
     <thead>
         <tr>
             <th>Ім'я</th>
@@ -11,6 +14,7 @@
             <th>Адреса</th>
             <th>Стать</th>
             <th>Сімейний статус</th>
+         
         </tr>
     </thead>
     <tbody>
@@ -26,11 +30,260 @@
                 <td>@student.Address</td>
                 <td>@student.Gender</td>
                 <td>@student.MaritalStatus</td>
+                <td>
+                    <button value="@student.Id" onclick="deleteStudent(this.value)" class="delete-btn">Delete</button>
+                </td>
+                <td>
+                    <button value="@student.Id" onclick="GetById(this.value)" class="edit-btn">edit</button>
+                </td>
+               <td>
+
+               </td>
             </tr>
         }
     </tbody>
-  
 </table>
-<div style="color:darkgreen">
-    <button id="addStudentButton">Додати студента</button>
+
+
+
+
+<div class="modal fade" id="personalModal" tabindex="-1" role="dialog" aria-labelledby="personalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">New Student</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="modalstudentform">
+                <div class="modal-body">
+                    <div class="input-wrapper">
+                        <input type="text" name="FirstName" placeholder="First Name" required>
+                      
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text"  name="LastName" placeholder="Last Name" required>
+                       
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text"  name="MiddleName" placeholder="Middle Name" >
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text"  name="TicketNumber" placeholder="Ticket Number" required>
+                     
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text" name="BirthYear" placeholder="Birth Year">
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text" name="BirthPlace" placeholder="Birth Place">
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text" name="Address" placeholder="Address">
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text" name="Gender" placeholder="Gender">
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text"  name="MaritalStatus" placeholder="Marital Status">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" onclick="saveStudent(event)">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
+<!-- Форма для додавання студента -->
+<script>
+function validateForm() {
+    var inputs = document.querySelectorAll('input[required]');
+    var isValid = true;
+
+    inputs.forEach(function(input) {
+        if (!input.value) {
+            isValid = false;
+            input.classList.add('invalid');
+        } else {
+            input.classList.remove('invalid');
+        }
+    });
+
+    return isValid;
+    }
+</script>
+<script>
+    function saveStudent(event) {
+        event.preventDefault();
+        var formData = $('#modalstudentform').serialize();
+        debugger;
+        var url = '/Student/Add'
+        // Виконання AJAX-запиту з серіалізацією форми
+        $.ajax({
+           
+            type: 'POST',
+            url: url, // URL вашого методу контролера
+            data: formData, // Серіалізація всієї форми
+            success: function (response) {
+                if (response.Message) {
+                    toastr.success(response.Message);
+                } else {
+                    toastr.error('An error occurred while adding the student.');
+                }
+            },
+            error: function (xhr) {
+                if (xhr.status === 400) {
+                    var errorMessage = xhr.responseJSON && xhr.responseJSON.ErrorMessage ? xhr.responseJSON.ErrorMessage : 'An error occurred while processing your request.';
+                    toastr.error(errorMessage);
+                } else {
+                    toastr.error('An internal server error occurred.');
+                }
+            }
+            
+        });
+        return false;
+    }
+</script>
+
+<script>
+    function deleteStudent(studentId) {
+        var url = '/Student/Delete'
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {studentId:studentId},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    $('#studentTable').find('[value="' + studentId + '"]').closest('tr').remove();
+                } else 
+                {
+                    toastr.error('Failed to delete student. Please try again.');
+                }
+            },
+            error: function (error) {
+                toastr.error('Failed to delete student. Please try again.');
+            }
+        });
+    }
+</script>
+
+<script>
+    function deleteStudent(studentId) {
+        var url = '/Student/GetById'
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: { studentId: studentId },
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    $('#studentTable').find('[value="' + studentId + '"]').closest('tr').remove();
+                } else {
+                    toastr.error('Failed to delete student. Please try again.');
+                }
+            },
+            error: function (error) {
+                toastr.error('Failed to delete student. Please try again.');
+            }
+        });
+    }
+</script>
+
+<script>
+    function showAddStudentForm() {
+        $('#personalModal').modal('show'); // Відображення модального вікна
+    }
+
+    function closeForm() {
+        $('#personalModal').modal('hide'); // Закриття модального вікна
+    }
+</script>
+<script>
+    function GetById(studentId) {
+        debugger;
+        $.ajax({
+            url: '/Student/GetStudentById',
+            type: 'GET',
+            data: { studentId: studentId },
+            success: function (response) {
+                if (response.success) {
+                    // Отримано успішну відповідь
+                    var student = response.student;
+                    debugger;
+                    $.each(student, function (key, value) {
+                        $('#modalstudentform input[name="' + key + '"]').val(value);
+                    });
+                    // Відображення модального вікна
+                    $('#personalModal').modal('show');
+                    console.log(student);
+                } else {
+                 
+                    console.error(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                // Відображення повідомлення про помилку
+                console.error(error);
+            }
+        });
+    }
+
+</script>
+                  @*       @model IEnumerable<BLL.StudentDto.StudentDTO>
+
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script src="/js/devextreme/dx.all.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/21.2.4/css/dx.common.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/21.2.4/css/dx.light.css" />
+
+<script>
+
+    var students = @Html.Raw(Json.Serialize(Model));
+
+    function deleteStudent(studentId) {
+        // Ваша логіка видалення студента
+    }
+
+    $(document).ready(function () {
+        debugger;
+        $("#studentDataGrid").dxDataGrid({
+            dataSource: students,
+            columns: [
+                { dataField: 'FirstName', caption: 'Ім\'я' },
+                { dataField: 'LastName', caption: 'Прізвище' },
+                { dataField: 'MiddleName', caption: 'По батькові' },
+                { dataField: 'TicketNumber', caption: 'Номер білету' },
+                { dataField: 'BirthYear', caption: 'Рік народження' },
+                { dataField: 'BirthPlace', caption: 'Місце народження' },
+                { dataField: 'Address', caption: 'Адреса' },
+                { dataField: 'Gender', caption: 'Стать' },
+                { dataField: 'MaritalStatus', caption: 'Сімейний статус' },
+                {
+                    caption: 'Delete',
+                    width: 100,
+                    cellTemplate: function (container, options) {
+                        $("<div>")
+                            .dxButton({
+                                text: "Delete",
+                                type: "danger",
+                                onClick: function () {
+                                    deleteStudent(options.data.Id);
+                                }
+                            })
+                            .appendTo(container);
+                    }
+                }
+            ],
+            showBorders: true,
+            allowColumnResizing: true
+        });
+    });
+</script>
+
+<div id="studentDataGrid">
+</div> *@

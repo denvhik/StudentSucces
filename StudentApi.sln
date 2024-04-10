@@ -11,7 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLL", "BLL\BLL.csproj", "{E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdoNet", "ADO,NET\AdoNet.csproj", "{B536072E-1711-44AF-A943-7365821CBF0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentMVC", "StudentMVC\StudentMVC.csproj", "{F1A389D5-74A1-4618-AF57-B4F6B0738D49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StudentMVC", "StudentMVC\StudentMVC.csproj", "{F1A389D5-74A1-4618-AF57-B4F6B0738D49}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevExtreme NuGet.config", "DevExtreme NuGet.config", "{9144C72F-31E8-4E7D-AD0B-A87E368C7963}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet.config = NuGet.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

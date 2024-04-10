@@ -9,12 +9,12 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     private readonly StudentSuccesContext _studentSuccesContext;
     private readonly DbSet<T> _dbSet;
 
-    public GenericRepository(StudentSuccesContext studentSuccesContext, IConfiguration confihuration) 
+    public GenericRepository(StudentSuccesContext studentSuccesContext, IConfiguration confihuration)
     {
-            _studentSuccesContext = studentSuccesContext;
-            _dbSet = _studentSuccesContext.Set<T>();
+        _studentSuccesContext = studentSuccesContext;
+        _dbSet = _studentSuccesContext.Set<T>();
     }
-    public  async Task<T> AddAsync(T entity)
+    public async Task<T> AddAsync(T entity)
     {
         try
         {
@@ -40,7 +40,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
             }
             return deleted;
         }
-        catch (Exception ex)               
+        catch (Exception ex)
         {
             throw SystemExeptionHandle.FromSystemException(ex);
         }
@@ -49,7 +49,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         try
         {
-            var result = await  _dbSet.ToListAsync();
+            var result = await _dbSet.ToListAsync();
             return result;
         }
         catch (Exception ex)
@@ -57,21 +57,24 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
             throw SystemExeptionHandle.FromSystemException(ex);
         }
     }
-    
-    
+
+
     public async Task<T> GetByIdAsync(int? id)
     {
         try
         {
             var objectOf = await _dbSet.FindAsync(id);
             return objectOf;
-        } 
-        catch (Exception ex) 
+        }
+        catch (Exception ex)
         {
             throw SystemExeptionHandle.FromSystemException(ex);
         }
     }
-    public async Task SaveChangesAsync() => await _studentSuccesContext.SaveChangesAsync();
+    public async Task SaveChangesAsync()
+    {
+        await _studentSuccesContext.SaveChangesAsync();
+    }
     
     public async Task<T> UpdateAsync(T entity)
     {

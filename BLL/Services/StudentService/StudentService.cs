@@ -86,15 +86,14 @@ public class StudentService : IStudentService
         }
     }
 
-    public async Task UpgradeStudentAsync(int id, StudentDTO studentDTO)
+    public async Task UpgradeStudentAsync( StudentDTO studentDTO)
     {
         try
         {
             _logger.LogInformation("start method UpgradeStudentAsync");
-            var studentById = await _genericRepository.GetByIdAsync(id);
+            var studentById = await _genericRepository.GetByIdAsync(studentDTO.Id);
             _logger.LogInformation($"{studentById}");
             if (studentById == null) return;
-            studentDTO.Id = studentById.StudentId;
             studentById.TicketNumber = studentDTO.TicketNumber;
             studentById.FirstName = studentDTO.FirstName;
             studentById.LastName = studentDTO.LastName;
@@ -255,5 +254,12 @@ public class StudentService : IStudentService
         {
             throw UserFriendlyException.FromException(ex);
         }
+    }
+
+    public async Task<StudentDTO> GetStudentByIdAsync(int studentid)
+    {
+      var studentbyid = await _genericRepository.GetByIdAsync(studentid);
+        var studentDTO = _mapper.Map<StudentDTO>(studentbyid);
+        return studentDTO;
     }
 }

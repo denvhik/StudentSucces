@@ -6,7 +6,7 @@ public class StudentApiProfile:Profile
 {
     public StudentApiProfile()
     {
-        CreateMap<StudentDTO,Student>().ReverseMap();
+        CreateMap<StudentDTO,Student>().ForMember(p=>p.StudentId,x=>x.MapFrom(src=>src.Id)).ReverseMap();
         CreateMap<GroupDTO, Group>().ReverseMap();
         CreateMap<SubjectDTO, Subject>().ReverseMap();
         CreateMap<HobbieDTO, Hobbie>().ReverseMap();

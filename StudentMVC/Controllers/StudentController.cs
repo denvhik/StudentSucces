@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BLL.Services.StudentService;
-using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+using BLL.StudentDto;
 
 namespace StudentMVC.Controllers;
 public class StudentController : Controller
@@ -16,38 +16,77 @@ public class StudentController : Controller
         var result = await _studentService.GetStudentAsync();
         return View(result);
     }
+    [HttpGet]
+    public IActionResult GetStudentById(int studentId)
+    {
+        try
+        {
+            var student = _studentService.GetStudentByIdAsync(studentId);
+            if (student != null)
+            {
+                return Json(new { success = true, student = student });
+            }
+            else
+            {
+                return Json(new { success = false, message = "Student not found" });
+            }
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = ex.Message });
+        }
+    }
+
+
     [HttpPost]
-    public async Task<IActionResult> AddStudentAsync([FromBody]BLL.StudentDto.StudentDTO studentDTO)
+    public async Task<IActionResult> Add([FromForm]StudentDTO studentDTO)
     {
         try
         {
             await _studentService.AddStudentAsync(studentDTO);
-            return new JsonResult(new { Message = "Student added successfully." });
+            return Ok(new { Message = $"Student Added successfully" });
+        }
+        catch (UserFriendlyException ex)
+        {
+            return Json(new { success=false, ErrorMessage = ex.Message });
         }
         catch (Exception ex)
         {
-            return BadRequest(new { Message = $"Failed to add student. Error: {ex.Message}" });
-        }
-    }
-    [HttpDelete]
-    public async Task<IActionResult> DeleteStudentAsync([FromBody] int id) 
-    {
-        try
-        {
-            await _studentService.DeleteStudentAsync(id);
-            return new JsonResult(new { Message = "Student deleted successfully." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = $"Failed to delete student. Error: {ex.Message}" });
+  
+            var userFriendlyEx = ExceptionTranslator.Translate(ex);
+            return StatusCode(500, new {succes= false, ErrorMessage = userFriendlyEx.Message });
         }
     }
     [HttpPost]
-    public async Task<IActionResult> UpdateStudentAsync([FromBody] int id, BLL.StudentDto.StudentDTO studentDTO) 
+    public async Task<IActionResult> Delete(int studentId) 
     {
         try
         {
-            await _studentService.UpgradeStudentAsync(id, studentDTO);
+            var deleted = await _studentService.DeleteStudentAsync(studentId);
+            if (deleted is true)
+            {
+                return Json(new { success = true, message = "Student delete successfully." });
+            }
+            else
+            {
+                throw new Exception("Student deletion failed.");
+            }
+        }
+        catch (UserFriendlyException ex)
+        {
+            return Json(new { success = false, message = $"Failed to update student. Error: {ex.Message}" });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = $"Failed to update student. Error: {ex.Message}" });
+        }
+    }
+    [HttpPost]
+    public async Task<IActionResult> UpdateStudentAsync([FromBody] StudentDTO studentDTO) 
+    {
+        try
+        {
+            await _studentService.UpgradeStudentAsync( studentDTO);
             return new JsonResult(new { Message = "Student updated successfully." });
         }
         catch (Exception ex)

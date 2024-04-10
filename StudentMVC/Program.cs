@@ -1,8 +1,6 @@
 using BLL;
 using AdoNet;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+
 namespace StudentMVC;
 public class Program
 {
@@ -11,7 +9,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-        builder.Services.AddControllersWithViews();
+        builder.Services.AddControllersWithViews().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null).AddRazorRuntimeCompilation();
         builder.Services.AddBllService();
         builder.Services.AddAdoServices();
         var app = builder.Build();
@@ -33,7 +31,7 @@ public class Program
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
-
+            
         app.Run();
     }
 }

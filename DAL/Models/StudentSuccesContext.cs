@@ -48,7 +48,7 @@ public partial class StudentSuccesContext : DbContext
 
     public virtual DbSet<VwStudentGroupView> VwStudentGroupViews { get; set; }
 
-   
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer(_configuration["ConnectionStrings:StudentConnections"]);
 
