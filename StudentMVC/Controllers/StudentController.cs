@@ -11,17 +11,24 @@ public class StudentController : Controller
         _studentService = studentService;
     }
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int pg = 1)
     {
-        var result = await _studentService.GetStudentAsync();
-        return View(result);
+        List<StudentDTO> students = await _studentService.GetStudentAsync();
+        const int pageSize = 5 ;
+        if (pg < 1) pg = 1 ;
+        int recsCount = students.Count();
+        Pager pager = new Pager(recsCount, pg, pageSize);
+        int reskip = (pg -1)*pageSize;
+        var data = students.Skip(reskip).Take(pager.PageSize).ToList();
+        ViewBag.Pager = pager;
+        return View(data);
     }
     [HttpGet]
-    public IActionResult GetStudentById(int studentId)
+    public IActionResult GetStudentById(int Id)
     {
         try
         {
-            var student = _studentService.GetStudentByIdAsync(studentId);
+            var student = _studentService.GetStudentByIdAsync(Id);
             if (student != null)
             {
                 return Json(new { success = true, student = student });
@@ -39,6 +46,7 @@ public class StudentController : Controller
 
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Add([FromForm]StudentDTO studentDTO)
     {
         try
@@ -58,11 +66,12 @@ public class StudentController : Controller
         }
     }
     [HttpPost]
-    public async Task<IActionResult> Delete(int studentId) 
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int Id) 
     {
         try
         {
-            var deleted = await _studentService.DeleteStudentAsync(studentId);
+            var deleted = await _studentService.DeleteStudentAsync(Id);
             if (deleted is true)
             {
                 return Json(new { success = true, message = "Student delete successfully." });
@@ -82,7 +91,8 @@ public class StudentController : Controller
         }
     }
     [HttpPost]
-    public async Task<IActionResult> UpdateStudentAsync([FromBody] StudentDTO studentDTO) 
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateStudent( StudentDTO studentDTO) 
     {
         try
         {

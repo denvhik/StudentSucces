@@ -12,7 +12,13 @@ public class Program
         builder.Services.AddControllersWithViews().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null).AddRazorRuntimeCompilation();
         builder.Services.AddBllService();
         builder.Services.AddAdoServices();
+        builder.Services.AddAntiforgery(options => 
+        {
+            options.HeaderName = "X-CSRF-TOKEN";
+        });
+
         var app = builder.Build();
+
 
         if (!app.Environment.IsDevelopment())
         {

@@ -1,8 +1,18 @@
 ﻿@model IEnumerable<BLL.StudentDto.StudentDTO>
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Pager pager = new();
+    int pageNo = 0;
+    if (ViewBag.Pager!=null)
+    {
+        pager = ViewBag.Pager;
+        pageNo = pager.CurrentPage;
+    }
+}
 <div>
-    <button id="addStudentButton" data-toggle="modal" data-target="#personalModal" class="add-btn">add student</button>
+    <button id="addStudentButton" onclick="changeModalTitle('Create Student')" data-toggle="modal" data-target="#personalModal" class="add-btn">Add student</button>
 </div>
-<table id="studentTable" class="table">
+<table class="table table-striped" id="Table">
     <thead>
         <tr>
             <th>Ім'я</th>
@@ -34,7 +44,7 @@
                     <button value="@student.Id" onclick="deleteStudent(this.value)" class="delete-btn">Delete</button>
                 </td>
                 <td>
-                    <button value="@student.Id" onclick="GetById(this.value)" class="edit-btn">edit</button>
+                    <button value="@student.Id" onclick="GetById(this.value)"  class="edit-btn">Edit</button>
                 </td>
                <td>
 
@@ -43,21 +53,61 @@
         }
     </tbody>
 </table>
+<div class="container">
+    @{
+        if (pager.TotalPage > 0)
+        {
+            <ul class="pagination justify-content-end">
+                @if (pager.TotalPage > 0)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-controller="Student" asp-action="Index" asp-route-pg="1">First</a>
+                    </li>
+                    <li>
+                        <a class="page-link" asp-controller="Student" asp-action="Index" asp-route-pg="@(pager.CurrentPage - 1)">Previous</a>
+                    </li>
+                }
+                @for (var pge = pager.StartPage; pge <= pager.EndPage; pge++)
+                {
+                    <li class="page-item @(pge == pager.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-controller="Student" asp-action="Index" asp-route-pg="@pge">@pge</a>
+                    </li>
+                }
+                @if (pager.CurrentPage < pager.TotalPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-controller="Student" asp-action="Index" asp-route-pg="@(pager.CurrentPage + 1)">Next</a>
+                    </li>
+                    <li>
+                        <a class="page-link" asp-controller="Student" asp-action="Index" asp-route-pg="@pager.TotalPage">Last</a>
+                    </li>
+                }
+            </ul>
+        }
+    }
+</div>
 
 
+<script>
+    function changeModalTitle(title) {
+        $('.modal-title').text(title);
+    }
+</script>
 
 
 <div class="modal fade" id="personalModal" tabindex="-1" role="dialog" aria-labelledby="personalModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">New Student</h2>
+                <h2 class="modal-title"></h2>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <form id="modalstudentform">
+                @Html.AntiForgeryToken()
                 <div class="modal-body">
+                    <input type="hidden" name="Id" id="Id" />
                     <div class="input-wrapper">
                         <input type="text" name="FirstName" placeholder="First Name" required>
                       
@@ -98,7 +148,12 @@
     </div>
 </div>
 
-<!-- Форма для додавання студента -->
+<script>
+function showModal(title) {
+    $('#personalModalLabel').text(title);
+        $('#modal-title').modal('show');
+}
+</script>
 <script>
 function validateForm() {
     var inputs = document.querySelectorAll('input[required]');
@@ -118,19 +173,29 @@ function validateForm() {
 </script>
 <script>
     function saveStudent(event) {
+        debugger;
+        var token = $('input[name="__RequestVerificationToken"]').val();
         event.preventDefault();
         var formData = $('#modalstudentform').serialize();
-        debugger;
         var url = '/Student/Add'
-        // Виконання AJAX-запиту з серіалізацією форми
+        var Id = $('#Id').val();
+        debugger;
+        if (Id !== undefined && Id !== "") {
+            url = '/Student/UpdateStudent';
+   
+        }
         $.ajax({
-           
+            url: url,
             type: 'POST',
-            url: url, // URL вашого методу контролера
-            data: formData, // Серіалізація всієї форми
+            data: formData, 
+            headers: {
+                "__RequestVerificationToken": token
+            },
             success: function (response) {
                 if (response.Message) {
+                    closeForm();
                     toastr.success(response.Message);
+                    
                 } else {
                     toastr.error('An error occurred while adding the student.');
                 }
@@ -149,40 +214,23 @@ function validateForm() {
     }
 </script>
 
+
 <script>
-    function deleteStudent(studentId) {
+    function deleteStudent(Id) {
+        var token = $('input[name="__RequestVerificationToken"]').val();
+        debugger;
         var url = '/Student/Delete'
         $.ajax({
             url: url,
             type: 'POST',
-            data: {studentId:studentId},
-            success: function (response) {
-                if (response.success) {
-                    toastr.success(response.message);
-                    $('#studentTable').find('[value="' + studentId + '"]').closest('tr').remove();
-                } else 
-                {
-                    toastr.error('Failed to delete student. Please try again.');
-                }
+            data: { Id: Id },
+            headers: {
+                "__RequestVerificationToken": token
             },
-            error: function (error) {
-                toastr.error('Failed to delete student. Please try again.');
-            }
-        });
-    }
-</script>
-
-<script>
-    function deleteStudent(studentId) {
-        var url = '/Student/GetById'
-        $.ajax({
-            url: url,
-            type: 'GET',
-            data: { studentId: studentId },
             success: function (response) {
                 if (response.success) {
                     toastr.success(response.message);
-                    $('#studentTable').find('[value="' + studentId + '"]').closest('tr').remove();
+                    $('#studentTable').find('[value="' + Id + '"]').closest('tr').remove();
                 } else {
                     toastr.error('Failed to delete student. Please try again.');
                 }
@@ -196,43 +244,46 @@ function validateForm() {
 
 <script>
     function showAddStudentForm() {
-        $('#personalModal').modal('show'); // Відображення модального вікна
+        $('#personalModal').modal('show');
     }
 
     function closeForm() {
-        $('#personalModal').modal('hide'); // Закриття модального вікна
+        $('#personalModal').modal('hide');
+        $('#modalstudentform')[0].reset();
+     
     }
 </script>
 <script>
-    function GetById(studentId) {
-        debugger;
+    function GetById(Id) {
         $.ajax({
             url: '/Student/GetStudentById',
             type: 'GET',
-            data: { studentId: studentId },
+            data: { Id: Id },
             success: function (response) {
                 if (response.success) {
-                    // Отримано успішну відповідь
-                    var student = response.student;
-                    debugger;
+
+                    var student = response.student.Result;
                     $.each(student, function (key, value) {
                         $('#modalstudentform input[name="' + key + '"]').val(value);
                     });
-                    // Відображення модального вікна
+                    $('#Id').val(Id);
+                    debugger;
+                    $('.modal-title').text('Edit Student');
+
                     $('#personalModal').modal('show');
-                    console.log(student);
+                    $('#personalModal').on('hidden.bs.modal', function (e) {
+                        closeForm();
+                    });
                 } else {
                  
                     console.error(response.message);
                 }
             },
             error: function (xhr, status, error) {
-                // Відображення повідомлення про помилку
                 console.error(error);
             }
         });
     }
-
 </script>
                   @*       @model IEnumerable<BLL.StudentDto.StudentDTO>
 

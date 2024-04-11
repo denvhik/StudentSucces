@@ -45,7 +45,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
             throw SystemExeptionHandle.FromSystemException(ex);
         }
     }
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public async Task<List<T>> GetAllAsync()
     {
         try
         {

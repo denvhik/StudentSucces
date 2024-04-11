@@ -3,7 +3,7 @@ using DAL.StoredProcedureDTO;
 namespace BLL.Services.StudentService;
 public interface IStudentService
 {
-    Task<IEnumerable<StudentDTO>> GetStudentAsync();
+    Task<List<StudentDTO>> GetStudentAsync();
     Task AddStudentAsync(StudentDTO student);
     Task UpgradeStudentAsync(StudentDTO studentDTO);
     Task <StudentDTO>GetStudentByIdAsync( int studentid);

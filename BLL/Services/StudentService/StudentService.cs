@@ -65,14 +65,14 @@ public class StudentService : IStudentService
         }
     }
 
-    public async Task<IEnumerable<StudentDTO>> GetStudentAsync()
+    public async Task<List<StudentDTO>> GetStudentAsync()
     {
         try
         {
             _logger.LogInformation("Початок методу GetStudentAsync");
             var studentModel = await _genericRepository.GetAllAsync();
             _logger.LogInformation($"Student: {studentModel}");
-            var studentDTO = _mapper.Map<IEnumerable<StudentDTO>>(studentModel);
+            var studentDTO = _mapper.Map<List<StudentDTO>>(studentModel).ToList();
             _logger.LogInformation($"Student: {studentDTO}");
             return studentDTO;
         }
