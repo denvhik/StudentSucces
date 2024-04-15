@@ -1,340 +1,105 @@
 ﻿@model IEnumerable<BLL.StudentDto.StudentDTO>
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@{
-    Pager pager = new();
-    int pageNo = 0;
-    if (ViewBag.Pager!=null)
+@(
+Html.DevExtreme().DataGrid<BLL.StudentDto.StudentDTO>()
+                .ID("StudentGrid")
+                .DataSource(ds => ds.Mvc()
+                    .Controller("Students")
+                    .LoadAction("Get")
+                    .InsertAction("Post")
+                    .UpdateAction("Put")
+                    .DeleteAction("Delete")
+                    .Key("Id")
+                )
+
+    .RemoteOperations(true)
+    .Columns(columns => {
+
+        columns.AddFor(m => m.FirstName);
+
+        columns.AddFor(m => m.LastName);
+
+        columns.AddFor(m => m.MiddleName);
+
+        columns.AddFor(m => m.TicketNumber);
+
+        columns.AddFor(m => m.BirthYear);
+
+        columns.AddFor(m => m.BirthPlace);
+
+        columns.AddFor(m => m.Address);
+
+        columns.AddFor(m => m.Gender);
+
+        columns.AddFor(m => m.MaritalStatus);
+
+        columns.AddFor(m => m.Gmail);
+    })
+    .Editing(e => e
+        .AllowAdding(true)
+        .AllowUpdating(true)
+        .AllowDeleting(true)
+        .Mode(GridEditMode.Form)
+        .Form(form =>
+        {
+            form
+                .ColCount(1)
+                .Items(items =>
+                {
+                    items.AddGroup()
+                        .Caption("Personal Information")
+                        .Items(groupitems =>
+                        {
+                            groupitems.AddSimpleFor(m => m.FirstName).IsRequired(false);
+                            groupitems.AddSimpleFor(m => m.LastName).IsRequired(false);
+                            groupitems.AddSimpleFor(m => m.MiddleName).IsRequired(false);
+                            groupitems.AddSimpleFor(m => m.TicketNumber).IsRequired(false);
+                            groupitems.AddSimpleFor(m => m.BirthYear).IsRequired(false);
+                            groupitems.AddSimpleFor(m => m.BirthPlace).IsRequired(false);
+                            groupitems.AddSimpleFor(m => m.Address).IsRequired(false);
+                            groupitems.AddSimpleFor(m => m.Gender).IsRequired(false);
+                            groupitems.AddSimpleFor(m => m.MaritalStatus).IsRequired(false);
+                            groupitems.AddSimpleFor(m => m.Gmail).IsRequired(true);
+                        });
+                });
+        })
+    )
+    .Paging(paging => paging.PageSize(5))
+    .Pager(pager =>
     {
-        pager = ViewBag.Pager;
-        pageNo = pager.CurrentPage;
-    }
-}
-<div>
-    <button id="addStudentButton" onclick="changeModalTitle('Create Student')" data-toggle="modal" data-target="#personalModal" class="add-btn">Add student</button>
-</div>
-<table class="table table-striped" id="Table">
-    <thead>
-        <tr>
-            <th>Ім'я</th>
-            <th>Прізвище</th>
-            <th>По батькові</th>
-            <th>Номер білету</th>
-            <th>Рік народження</th>
-            <th>Місце народження</th>
-            <th>Адреса</th>
-            <th>Стать</th>
-            <th>Сімейний статус</th>
-         
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var student in Model)
-        {
-            <tr>
-                <td>@student.FirstName</td>
-                <td>@student.LastName</td>
-                <td>@student.MiddleName</td>
-                <td>@student.TicketNumber</td>
-                <td>@student.BirthYear</td>
-                <td>@student.BirthPlace</td>
-                <td>@student.Address</td>
-                <td>@student.Gender</td>
-                <td>@student.MaritalStatus</td>
-                <td>
-                    <button value="@student.Id" onclick="deleteStudent(this.value)" class="delete-btn">Delete</button>
-                </td>
-                <td>
-                    <button value="@student.Id" onclick="GetById(this.value)"  class="edit-btn">Edit</button>
-                </td>
-               <td>
-
-               </td>
-            </tr>
-        }
-    </tbody>
-</table>
-<div class="container">
-    @{
-        if (pager.TotalPage > 0)
-        {
-            <ul class="pagination justify-content-end">
-                @if (pager.TotalPage > 0)
-                {
-                    <li class="page-item">
-                        <a class="page-link" asp-controller="Student" asp-action="Index" asp-route-pg="1">First</a>
-                    </li>
-                    <li>
-                        <a class="page-link" asp-controller="Student" asp-action="Index" asp-route-pg="@(pager.CurrentPage - 1)">Previous</a>
-                    </li>
-                }
-                @for (var pge = pager.StartPage; pge <= pager.EndPage; pge++)
-                {
-                    <li class="page-item @(pge == pager.CurrentPage ? "active" : "")">
-                        <a class="page-link" asp-controller="Student" asp-action="Index" asp-route-pg="@pge">@pge</a>
-                    </li>
-                }
-                @if (pager.CurrentPage < pager.TotalPage)
-                {
-                    <li class="page-item">
-                        <a class="page-link" asp-controller="Student" asp-action="Index" asp-route-pg="@(pager.CurrentPage + 1)">Next</a>
-                    </li>
-                    <li>
-                        <a class="page-link" asp-controller="Student" asp-action="Index" asp-route-pg="@pager.TotalPage">Last</a>
-                    </li>
-                }
-            </ul>
-        }
-    }
-</div>
-
-
-<script>
-    function changeModalTitle(title) {
-        $('.modal-title').text(title);
-    }
-</script>
-
-
-<div class="modal fade" id="personalModal" tabindex="-1" role="dialog" aria-labelledby="personalModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title"></h2>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="modalstudentform">
-                @Html.AntiForgeryToken()
-                <div class="modal-body">
-                    <input type="hidden" name="Id" id="Id" />
-                    <div class="input-wrapper">
-                        <input type="text" name="FirstName" placeholder="First Name" required>
-                      
-                    </div>
-                    <div class="input-wrapper">
-                        <input type="text"  name="LastName" placeholder="Last Name" required>
-                       
-                    </div>
-                    <div class="input-wrapper">
-                        <input type="text"  name="MiddleName" placeholder="Middle Name" >
-                    </div>
-                    <div class="input-wrapper">
-                        <input type="text"  name="TicketNumber" placeholder="Ticket Number" required>
-                     
-                    </div>
-                    <div class="input-wrapper">
-                        <input type="text" name="BirthYear" placeholder="Birth Year">
-                    </div>
-                    <div class="input-wrapper">
-                        <input type="text" name="BirthPlace" placeholder="Birth Place">
-                    </div>
-                    <div class="input-wrapper">
-                        <input type="text" name="Address" placeholder="Address">
-                    </div>
-                    <div class="input-wrapper">
-                        <input type="text" name="Gender" placeholder="Gender">
-                    </div>
-                    <div class="input-wrapper">
-                        <input type="text"  name="MaritalStatus" placeholder="Marital Status">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" onclick="saveStudent(event)">Save</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-function showModal(title) {
-    $('#personalModalLabel').text(title);
-        $('#modal-title').modal('show');
-}
-</script>
-<script>
-function validateForm() {
-    var inputs = document.querySelectorAll('input[required]');
-    var isValid = true;
-
-    inputs.forEach(function(input) {
-        if (!input.value) {
-            isValid = false;
-            input.classList.add('invalid');
-        } else {
-            input.classList.remove('invalid');
-        }
+        pager.Visible(true);
+        pager.DisplayMode(GridPagerDisplayMode.Full);
+        pager.ShowPageSizeSelector(true);
+        pager.AllowedPageSizes(new JS("[5,7,'all']"));
+        pager.ShowInfo(true);
+        pager.ShowNavigationButtons(true);
+    })
+    .FilterRow(filter => filter.Visible(true))
+    .SearchPanel(searchPanel => searchPanel
+        .Visible(true)
+        .Width(240)
+        .Placeholder("Search...")
+    )
+  
+ .Toolbar(toolbar =>
+{
+    toolbar.Items(items =>
+    {
+        items.Add().Name("addRowButton");
+        items.Add().Name("searchPanel");
+        items.Add().Widget(w =>
+            w.Button()
+                .Icon("refresh")
+                .OnClick("reloadGrid")
+        );
     });
-
-    return isValid;
-    }
-</script>
-<script>
-    function saveStudent(event) {
-        debugger;
-        var token = $('input[name="__RequestVerificationToken"]').val();
-        event.preventDefault();
-        var formData = $('#modalstudentform').serialize();
-        var url = '/Student/Add'
-        var Id = $('#Id').val();
-        debugger;
-        if (Id !== undefined && Id !== "") {
-            url = '/Student/UpdateStudent';
-   
-        }
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: formData, 
-            headers: {
-                "__RequestVerificationToken": token
-            },
-            success: function (response) {
-                if (response.Message) {
-                    closeForm();
-                    toastr.success(response.Message);
-                    
-                } else {
-                    toastr.error('An error occurred while adding the student.');
-                }
-            },
-            error: function (xhr) {
-                if (xhr.status === 400) {
-                    var errorMessage = xhr.responseJSON && xhr.responseJSON.ErrorMessage ? xhr.responseJSON.ErrorMessage : 'An error occurred while processing your request.';
-                    toastr.error(errorMessage);
-                } else {
-                    toastr.error('An internal server error occurred.');
-                }
-            }
-            
-        });
-        return false;
-    }
-</script>
-
+})
+)
 
 <script>
-    function deleteStudent(Id) {
-        var token = $('input[name="__RequestVerificationToken"]').val();
-        debugger;
-        var url = '/Student/Delete'
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: { Id: Id },
-            headers: {
-                "__RequestVerificationToken": token
-            },
-            success: function (response) {
-                if (response.success) {
-                    toastr.success(response.message);
-                    $('#studentTable').find('[value="' + Id + '"]').closest('tr').remove();
-                } else {
-                    toastr.error('Failed to delete student. Please try again.');
-                }
-            },
-            error: function (error) {
-                toastr.error('Failed to delete student. Please try again.');
-            }
-        });
+    function reloadGrid() {
+        var grid = $("#StudentGrid").dxDataGrid("instance");
+        grid.refresh();
     }
 </script>
 
-<script>
-    function showAddStudentForm() {
-        $('#personalModal').modal('show');
-    }
-
-    function closeForm() {
-        $('#personalModal').modal('hide');
-        $('#modalstudentform')[0].reset();
-     
-    }
-</script>
-<script>
-    function GetById(Id) {
-        $.ajax({
-            url: '/Student/GetStudentById',
-            type: 'GET',
-            data: { Id: Id },
-            success: function (response) {
-                if (response.success) {
-
-                    var student = response.student.Result;
-                    $.each(student, function (key, value) {
-                        $('#modalstudentform input[name="' + key + '"]').val(value);
-                    });
-                    $('#Id').val(Id);
-                    debugger;
-                    $('.modal-title').text('Edit Student');
-
-                    $('#personalModal').modal('show');
-                    $('#personalModal').on('hidden.bs.modal', function (e) {
-                        closeForm();
-                    });
-                } else {
-                 
-                    console.error(response.message);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error(error);
-            }
-        });
-    }
-</script>
-                  @*       @model IEnumerable<BLL.StudentDto.StudentDTO>
-
-<script src="/lib/jquery/dist/jquery.min.js"></script>
-<script src="/js/devextreme/dx.all.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/21.2.4/css/dx.common.css" />
-<link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/21.2.4/css/dx.light.css" />
-
-<script>
-
-    var students = @Html.Raw(Json.Serialize(Model));
-
-    function deleteStudent(studentId) {
-        // Ваша логіка видалення студента
-    }
-
-    $(document).ready(function () {
-        debugger;
-        $("#studentDataGrid").dxDataGrid({
-            dataSource: students,
-            columns: [
-                { dataField: 'FirstName', caption: 'Ім\'я' },
-                { dataField: 'LastName', caption: 'Прізвище' },
-                { dataField: 'MiddleName', caption: 'По батькові' },
-                { dataField: 'TicketNumber', caption: 'Номер білету' },
-                { dataField: 'BirthYear', caption: 'Рік народження' },
-                { dataField: 'BirthPlace', caption: 'Місце народження' },
-                { dataField: 'Address', caption: 'Адреса' },
-                { dataField: 'Gender', caption: 'Стать' },
-                { dataField: 'MaritalStatus', caption: 'Сімейний статус' },
-                {
-                    caption: 'Delete',
-                    width: 100,
-                    cellTemplate: function (container, options) {
-                        $("<div>")
-                            .dxButton({
-                                text: "Delete",
-                                type: "danger",
-                                onClick: function () {
-                                    deleteStudent(options.data.Id);
-                                }
-                            })
-                            .appendTo(container);
-                    }
-                }
-            ],
-            showBorders: true,
-            allowColumnResizing: true
-        });
-    });
-</script>
-
-<div id="studentDataGrid">
-</div> *@

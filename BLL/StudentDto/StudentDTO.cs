@@ -1,4 +1,6 @@
-﻿namespace BLL.StudentDto;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BLL.StudentDto;
 public class StudentDTO
 {
     public int? Id { get; set; }
@@ -11,4 +13,9 @@ public class StudentDTO
     public string Address { get; set; }
     public string Gender { get; set; }
     public string MaritalStatus { get; set; }
+
+    [Required(ErrorMessage ="this field is required")]
+    [EmailAddress(ErrorMessage = "Invalid email address.")]
+    [RegularExpression(@"^[^@\s]+@[^@\s]+\.(com|net|org|gov|ua)$", ErrorMessage = "Invalid .")]
+    public string Gmail { get; set; }
 }

@@ -20,116 +20,16 @@ html {
 body {
   margin-bottom: 60px;
 }
-#addStudentForm {
-    display:flex;
-    justify-content:center;
+
+.overlay {
+   
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border: 1px solid black;
-    z-index: 9999;
-    display: none;
-}
-
-
-
-.add-student-form {
- 
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border: 1px solid black;
-    z-index: 9999;
-    display: none;
-}
-
-/*.overlay {*/
-    /* CSS стилі для затемнення */
-    /*position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);*/ /* затемнення */
-    /*z-index: 999;
+    background-color: rgba(0, 0, 0, 0.5);  затемнення 
+    z-index: 999;
     display: none;
-}*/
-
-#studentForm {
-    width: 300px;
-    padding: 32px;
-    border-radius: 10px;
-    box-shadow: 0 4px 16px #808080;
-    font-family: sans-serif;
-    letter-spacing: 1px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    display: none;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border: 1px solid black;
-    z-index: 9999;
-}
-    #studentForm input[type="text"] {
-        border-radius: 5px; /* Округлені краї інпутів */
-        padding: 8px; /* Відступи всередині інпутів */
-        border: 1px solid #ccc; /* Границі інпутів */
-    }
-.forminput {
-    font-family:sans-serif;
-    letter-spacing:1px;
-    font-size:16px;
-}
-.input-wrapper {
-    margin-bottom: 15px; /* Відступ між інпутами */
-    text-align: center; /* Центрування тексту */
 }
 
-    .input-wrapper input {
-        width: 100%; /* Ширина поля вводу на всю ширину контейнера */
-        padding: 10px; /* Внутрішній відступ */
-        border-radius: 5px; /* Закруглені кути */
-        border: 1px solid #ccc; /* Обрамлення */
-        box-sizing: border-box; /* Розрахунок розміру, включаючи обрамлення */
-        font-size: 16px; /* Розмір шрифту */
-    }
-.required::after {
-    content: "*";
-    color: red;
-}
-/* Стилі для кнопки Delete */
-button.delete-btn {
-    background-color: red;
-    border: none;
-    color: white;
-    padding: 5px 10px; /* Розміри кнопки */
-    border-radius: 5px; /* Закруглені кути */
-    cursor: pointer; /* Курсор при наведенні */
-}
-
-/* Стилі для кнопки Edit */
-button.edit-btn {
-    background-color: blue; /* Колір фону */
-    border: none; /* Без рамки */
-    color: white; /* Колір тексту */
-    padding: 5px 10px; /* Розміри кнопки */
-    border-radius: 5px; /* Закруглені кути */
-    cursor: pointer; /* Курсор при наведенні */
-}
-
-button.add-btn {
-    background-color: green; /* Колір фону */
-    border: none; /* Без рамки */
-    color: white; /* Колір тексту */
-    padding: 5px 10px; /* Розміри кнопки */
-    border-radius: 5px; /* Закруглені кути */
-    cursor: pointer; /* Курсор при наведенні */
-}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace DAL.Models;
 
@@ -32,6 +33,10 @@ public partial class Student
     public DateTime ModifiedDateTime { get; set; }
 
     public Guid ModifiedBy { get; set; }
+
+    [Required(ErrorMessage = "field Gmail  is required")]
+    [EmailAddress]
+    public string Gmail { get; set; } 
 
     public virtual ICollection<GroupEnrollment> GroupEnrollments { get; set; } = new List<GroupEnrollment>();
 

@@ -11,17 +11,17 @@ public class StudentController : Controller
         _studentService = studentService;
     }
     [HttpGet]
-    public async Task<IActionResult> Index(int pg = 1)
+    public async Task<IActionResult> Index()
     {
         List<StudentDTO> students = await _studentService.GetStudentAsync();
-        const int pageSize = 5 ;
-        if (pg < 1) pg = 1 ;
-        int recsCount = students.Count();
-        Pager pager = new Pager(recsCount, pg, pageSize);
-        int reskip = (pg -1)*pageSize;
-        var data = students.Skip(reskip).Take(pager.PageSize).ToList();
-        ViewBag.Pager = pager;
-        return View(data);
+        //const int pageSize = 5;
+        //if (pg < 1) pg = 1;
+        //int recsCount = students.Count();
+        //Pager pager = new Pager(recsCount, pg, pageSize);
+        //int reskip = (pg - 1) * pageSize;
+        //var data = students.Skip(reskip).Take(pager.PageSize).ToList();
+        //ViewBag.Pager = pager;
+        return View(students);
     }
     [HttpGet]
     public IActionResult GetStudentById(int Id)
@@ -65,6 +65,7 @@ public class StudentController : Controller
             return StatusCode(500, new {succes= false, ErrorMessage = userFriendlyEx.Message });
         }
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int Id) 
@@ -92,7 +93,7 @@ public class StudentController : Controller
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateStudent( StudentDTO studentDTO) 
+    public async Task<IActionResult> UpdateStudent(StudentDTO studentDTO) 
     {
         try
         {
@@ -104,5 +105,10 @@ public class StudentController : Controller
             return BadRequest(new { Message = $"Failed to update student. Error: {ex.Message}" });
         }
     }
-
+    [HttpGet]
+    public async  Task<IActionResult>GetStudents()
+    {
+        List<StudentDTO> students = await _studentService.GetStudentAsync();
+        return Json(students);
+    }
 }
