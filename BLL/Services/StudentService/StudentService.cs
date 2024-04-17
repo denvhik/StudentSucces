@@ -98,11 +98,12 @@ public class StudentService : IStudentService
             studentById.FirstName = studentDTO.FirstName;
             studentById.LastName = studentDTO.LastName;
             studentById.MiddleName = studentDTO.MiddleName;
-            studentById.MaritalStatus = studentDTO.MaritalStatus;
+            studentById.MaritalStatus = studentDTO.MaritalStatus.ToString();
             studentById.BirthYear = studentDTO.BirthYear;
             studentById.BirthPlace = studentDTO.BirthPlace;
-            studentById.Gender = studentDTO.Gender;
+            studentById.Gender = studentDTO.Gender.ToString();
             studentById.Address = studentDTO.Address;
+            studentById.Gmail = studentDTO.Gmail;
             await _genericRepository.UpdateAsync(studentById);
             _logger.LogInformation($"{studentById}");
       

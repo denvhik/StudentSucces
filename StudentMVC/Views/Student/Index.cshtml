@@ -4,65 +4,51 @@
 Html.DevExtreme().DataGrid<BLL.StudentDto.StudentDTO>()
                 .ID("StudentGrid")
                 .DataSource(ds => ds.Mvc()
-                    .Controller("Students")
+                    .Controller("Student")
                     .LoadAction("Get")
                     .InsertAction("Post")
                     .UpdateAction("Put")
                     .DeleteAction("Delete")
                     .Key("Id")
+                    .OnBeforeSend("grid_dataSource_beforeSend")
                 )
-
+    .ShowColumnLines(true)
+    .ShowRowLines(true)
+    .RowAlternationEnabled(true)
     .RemoteOperations(true)
-    .Columns(columns => {
+    .Columns(columns =>
+    {
 
-        columns.AddFor(m => m.FirstName);
+    columns.AddFor(m => m.FirstName);
 
-        columns.AddFor(m => m.LastName);
+    columns.AddFor(m => m.LastName);
 
-        columns.AddFor(m => m.MiddleName);
+    columns.AddFor(m => m.MiddleName);
 
-        columns.AddFor(m => m.TicketNumber);
+    columns.AddFor(m => m.TicketNumber);
 
-        columns.AddFor(m => m.BirthYear);
+    columns.AddFor(m => m.BirthYear);
+
 
         columns.AddFor(m => m.BirthPlace);
 
         columns.AddFor(m => m.Address);
 
-        columns.AddFor(m => m.Gender);
+        columns.AddFor(m => m.Gender).Lookup(lookup=>lookup
+            .DataSource(ds=>ds.WebApi().Controller("Student").LoadAction("GenderLookup").Key("Value")).ValueExpr("Value").DisplayExpr("Text")
+        );
 
-        columns.AddFor(m => m.MaritalStatus);
+        columns.AddFor(m => m.MaritalStatus).Lookup(lookup=>lookup
+            .DataSource(ds => ds.WebApi().Controller("Student").LoadAction("Maritalstatus").Key("Value")).ValueExpr("Value").DisplayExpr("Text")
+        );;
 
         columns.AddFor(m => m.Gmail);
-    })
+    }
+)
     .Editing(e => e
         .AllowAdding(true)
         .AllowUpdating(true)
         .AllowDeleting(true)
-        .Mode(GridEditMode.Form)
-        .Form(form =>
-        {
-            form
-                .ColCount(1)
-                .Items(items =>
-                {
-                    items.AddGroup()
-                        .Caption("Personal Information")
-                        .Items(groupitems =>
-                        {
-                            groupitems.AddSimpleFor(m => m.FirstName).IsRequired(false);
-                            groupitems.AddSimpleFor(m => m.LastName).IsRequired(false);
-                            groupitems.AddSimpleFor(m => m.MiddleName).IsRequired(false);
-                            groupitems.AddSimpleFor(m => m.TicketNumber).IsRequired(false);
-                            groupitems.AddSimpleFor(m => m.BirthYear).IsRequired(false);
-                            groupitems.AddSimpleFor(m => m.BirthPlace).IsRequired(false);
-                            groupitems.AddSimpleFor(m => m.Address).IsRequired(false);
-                            groupitems.AddSimpleFor(m => m.Gender).IsRequired(false);
-                            groupitems.AddSimpleFor(m => m.MaritalStatus).IsRequired(false);
-                            groupitems.AddSimpleFor(m => m.Gmail).IsRequired(true);
-                        });
-                });
-        })
     )
     .Paging(paging => paging.PageSize(5))
     .Pager(pager =>
@@ -80,8 +66,8 @@ Html.DevExtreme().DataGrid<BLL.StudentDto.StudentDTO>()
         .Width(240)
         .Placeholder("Search...")
     )
-  
- .Toolbar(toolbar =>
+
+    .Toolbar(toolbar =>
 {
     toolbar.Items(items =>
     {
@@ -96,10 +82,11 @@ Html.DevExtreme().DataGrid<BLL.StudentDto.StudentDTO>()
 })
 )
 
+
 <script>
     function reloadGrid() {
+        
         var grid = $("#StudentGrid").dxDataGrid("instance");
         grid.refresh();
     }
 </script>
-

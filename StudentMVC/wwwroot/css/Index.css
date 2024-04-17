@@ -1,5 +1,9 @@
-﻿.dx-datagrid .dx-link-edit,
-.dx-datagrid .dx-link-delete {
+﻿
+.dx-datagrid .dx-link-delete,
+.dx-datagrid .dx-link-edit,
+.dx-datagrid .dx-link-save,
+.dx-datagrid .dx-link-cancel
+{
     background-color: #007bff;
     color: #fff;
     border: 1px solid #007bff;
@@ -9,7 +13,9 @@
     text-decoration: none;
 }
 
-.dx-datagrid .dx-link-delete {
+.dx-datagrid .dx-link-delete,
+.dx-datagrid .dx-link-cancel
+{
     background-color: #dc3545;
     border-color: #dc3545;
 }

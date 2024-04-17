@@ -12,14 +12,26 @@ public class Program
         builder.Services.AddControllersWithViews().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null).AddRazorRuntimeCompilation();
         builder.Services.AddBllService();
         builder.Services.AddAdoServices();
-        builder.Services.AddAntiforgery(options => 
-        {
-            options.HeaderName = "X-CSRF-TOKEN";
-        });
+        //builder.Services.AddAntiforgery(options => 
+        //{
+        //    options.HeaderName = "X-CSRF-TOKEN";
+        //});
 
         var app = builder.Build();
 
-
+        app.Use(async (context, next) => {
+            string path = context.Request.Path;
+            if (path.EndsWith(".css") || path.EndsWith(".js"))
+            {
+                TimeSpan maxAge = new TimeSpan(7, 0, 0, 0); context.Response.Headers.Append("Cache-Control", "max-age=" + maxAge.TotalSeconds.ToString("0"));
+            }
+            else
+            {
+                context.Response.Headers.Append("Cache-Control", "no-cache");
+                context.Response.Headers.Append("Cache-Control", "private, no-store");
+            }
+            await next();
+        });
         if (!app.Environment.IsDevelopment())
         {
             app.UseExceptionHandler("/Home/Error");
