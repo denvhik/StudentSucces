@@ -187,15 +187,14 @@ function sendData()
     var bookId = document.getElementById("bookId").value;
     var dateTime = document.getElementById("dateTime").value;
     var data = {
-        studentId: studentId,
-        bookId: bookId,
-        dateTime: dateTime
+        StudentId: studentId,
+        BookId: bookId,
+        DateTime: dateTime
     };
     $.ajax({
-        url: '', 
+        url: '/Student/BookMenagment', 
         type: 'POST', 
-        contentType: 'application/json', 
-        data: JSON.stringify(data), 
+        data: data, 
         success: function (response) {
         
         },

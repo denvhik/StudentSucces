@@ -114,9 +114,26 @@ public class CallStoredProcedureRepository : ICallStoredProcedureRepository
         }
     }
 
-    public Task<string> CallReturnBookProcedureAsync(int studentId, int bookId, DateTime time)
+    public async  Task<string> CallReturnBookProcedureAsync(int studentId, int bookId, DateTime time)
     {
-        throw new NotImplementedException();
+        using var connection = new SqlConnection(_configuration.GetConnectionString("StudentConnections"));
+        var parameters = new DynamicParameters();
+        parameters.Add("@StudentID", studentId);
+        parameters.Add("@BookID", bookId);
+        parameters.Add("@CheckEndDate", time);
+        parameters.Add("@ErrorMessage", dbType: DbType.String, direction: ParameterDirection.Output);
+
+        try
+        {
+            await connection.ExecuteAsync("Sp_ReturnBook", parameters, commandType: CommandType.StoredProcedure);
+        }
+        catch (Exception ex)
+        {
+            throw SystemExeptionHandle.FromSystemException(ex);
+        }
+        var errorMessage = parameters.Get<string>("@ErrorMessage");
+
+        return errorMessage;
     }
 
     public async Task<List<StudentRatingResult>> CallSortStudentRatingAsync()
@@ -141,11 +158,15 @@ public class CallStoredProcedureRepository : ICallStoredProcedureRepository
         var parameters = new DynamicParameters();
         parameters.Add("@StudentID", studentId);
         parameters.Add("@BookID", bookId);
-        parameters.Add("@ErrorMessage", dbType: DbType.String, direction: ParameterDirection.Output);
+        //parameters.Add("@ErrorMessage", dbType: DbType.String, direction: ParameterDirection.Output);
 
         try
         {
             await connection.ExecuteAsync("Sp_TakeBook", parameters, commandType: CommandType.StoredProcedure);
+        }
+        catch(SqlException ex) 
+        {
+            throw new Exception(ex.Message);
         }
         catch (Exception ex)
         {

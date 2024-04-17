@@ -5,6 +5,7 @@ using BLL.Services.StudentService;
 using BLL.StudentDto;
 using Newtonsoft.Json;
 using System.Collections;
+using System.Runtime.InteropServices;
 
 namespace StudentMVC.Controllers;
 
@@ -33,6 +34,18 @@ public class StudentController : Controller
  
        
     }
+    [HttpPost]
+    public async Task<IActionResult> BookMenagment(int StudentId, int BookId, [Optional]DateTime? DateTime) 
+    {
+       if (DateTime is null) 
+       {
+           var takebook = await _studentService.TakeBook(StudentId, BookId);
+            return Json(takebook);
+       }
+        var returnbook = await _studentService.ReturningBook(StudentId, BookId, (DateTime)DateTime);
+        return Json(returnbook);
+    }
+
     [HttpGet]
 
     public async Task<IActionResult> Get(DataSourceLoadOptions loadOptions)
