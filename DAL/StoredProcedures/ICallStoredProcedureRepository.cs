@@ -9,4 +9,5 @@ public interface ICallStoredProcedureRepository
     Task<List<StudentRatingResult>> CallSortStudentRatingAsync();
     Task<List<OverdueBookReportDTO>> CallOverdueBookReportAsync();
     Task <string>  CallTakeBookProcedureAsync(int studentId, int bookId);
+    Task <string>  CallReturnBookProcedureAsync(int studentId, int bookId,DateTime time);
 }

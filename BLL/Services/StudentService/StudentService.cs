@@ -6,6 +6,7 @@ using DAL.StoredProcedureDTO;
 using DAL.StoredProcedures;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
+using System.Net;
 
 namespace BLL.Services.StudentService;
 public class StudentService : IStudentService
@@ -235,17 +236,12 @@ public class StudentService : IStudentService
             throw UserFriendlyException.FromException(ex);
         }
     }
-    public async Task<bool> ReturningBook(int studentId,int bookId,DateTime EndTime)
+    public async Task<string> ReturningBook(int studentId,int bookId,DateTime EndTime)
     {
         try
         {
-            var studentbook = await _studentBookRepository.GetByIdAsync(studentId);
-            studentbook.BookId = bookId;
-            studentbook.StudentId = studentId;
-            studentbook.CheckEndDate = EndTime;
-            await _studentBookRepository.UpdateAsync(studentbook);
-            _logger.LogInformation($"information about updating StudentBook:{studentbook}");
-            return true;
+            var studentbook = await _callStoredProcedureRepository.CallReturnBookProcedureAsync(studentId, bookId, EndTime);
+            return studentbook;
         }
         catch (SqlException ex) 
         {
@@ -262,5 +258,22 @@ public class StudentService : IStudentService
       var studentbyid = await _genericRepository.GetByIdAsync(studentid);
         var studentDTO = _mapper.Map<StudentDTO>(studentbyid);
         return studentDTO;
+    }
+
+    public  async Task<string> TakeBook(int studentId, int BookId)
+    {
+        try
+        {
+            var studentbook = await _callStoredProcedureRepository.CallTakeBookProcedureAsync(studentId, BookId);
+            return studentbook;
+        }
+        catch (SqlException ex)
+        {
+            throw UserFriendlyException.FromSqlException(ex);
+        }
+        catch (Exception ex)
+        {
+            throw UserFriendlyException.FromException(ex);
+        }
     }
 }

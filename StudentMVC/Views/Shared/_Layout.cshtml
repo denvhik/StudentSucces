@@ -56,6 +56,7 @@
 
     <script src="~/js/devextreme/aspnet/dx.aspnet.mvc.js"></script>
     <script src="~/js/devextreme/aspnet/dx.aspnet.data.js"></script>
+    <script src="~/js/site.js"></script>
    
 </head>
  @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
@@ -64,6 +65,7 @@
 }
 <script>
     function grid_dataSource_beforeSend(op, ajax) {
+       
         ajax.headers = { RequestVerificationToken: '@GetAntiXsrfRequestToken()' };
     }
 </script>

@@ -20,3 +20,42 @@
     border-color: #dc3545;
 }
 
+
+.dx-field {
+    margin-bottom: 10px;
+}
+
+.dx-field-item-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.dx-field-item-value input[type="text"],
+.dx-field-item-value input[type="datetime-local"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.button-send {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border-radius: 3px;
+    background-color: #126ec9;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.button-cancel {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border-radius: 3px;
+    background-color: #a60505;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}

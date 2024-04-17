@@ -19,8 +19,7 @@ public class StudentController : Controller
     }
 
     [HttpGet]
-
-    public async Task<IActionResult> Index()
+    public async   Task<IActionResult> Index()
     {
         //const int pageSize = 5;
         //if (pg < 1) pg = 1;
@@ -29,14 +28,16 @@ public class StudentController : Controller
         //int reskip = (pg - 1) * pageSize;
         //var data = students.Skip(reskip).Take(pager.PageSize).ToList();
         //ViewBag.Pager = pager;
-        return View();
+        
+            return View();
+ 
+       
     }
     [HttpGet]
 
     public async Task<IActionResult> Get(DataSourceLoadOptions loadOptions)
     {
         var students = await _studentService.GetStudentAsync();
-
         return Json(DataSourceLoader.Load(students, loadOptions));
     }
 
@@ -44,50 +45,67 @@ public class StudentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Post(string values)
     {
-        var valuesDict = JsonConvert.DeserializeObject<StudentDTO>(values);
-        if (!TryValidateModel(valuesDict))
-            return BadRequest(ModelState);
-        await _studentService.AddStudentAsync(valuesDict);
-        return Json(new { Message = $"Student Added successfully" }); ;
+        try
+        {
+            var valuesDict = JsonConvert.DeserializeObject<StudentDTO>(values);
+            if (!TryValidateModel(valuesDict))
+                return BadRequest(ModelState);
+            if (ModelState.IsValid)
+            {
+                await _studentService.AddStudentAsync(valuesDict);
+            }
+            return Json(new { success = true, message = $"Student Added successfully" });
+        }
+        catch (UserFriendlyException ex) 
+        {
+            return Json(new { success = false,message = $"Failed  add student. Error: {ex.Message}" });
+        }
     }
 
     [HttpPut]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Put(int key,string values)
     {
-        var model = await _studentService.GetByIdAsync(key);
-        if (model == null)
-            return StatusCode(409, "Object not found");
-
-        var valuesDict = JsonConvert.DeserializeObject<IDictionary>(values);
-        PopulateModel(model, valuesDict);
-        await _studentService.UpgradeStudentAsync(model);
-        return Ok();
+        try
+        {
+            var model = await _studentService.GetByIdAsync(key);
+            if (model == null)
+                return StatusCode(409, "Object not found");
+            var valuesDict = JsonConvert.DeserializeObject<IDictionary>(values);
+            if (ModelState.IsValid)
+            {
+                PopulateModel(model, valuesDict);
+                await _studentService.UpgradeStudentAsync(model);
+            }
+            return Json(new {success=true, message = $"student updated succes" });
+        } 
+        catch (UserFriendlyException ex) 
+        {
+            return Json(new { success = false, message = $"Failed to update student. Error: {ex.Message}" });
+        }
+        catch 
+        {
+            return BadRequest(ModelState);
+        }   
     }
 
     [HttpDelete]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int key)
     {
-        try
-        {
-            var deleted = await _studentService.DeleteStudentAsync(key);
-            if (deleted is true)
-            {
-                return Json(new { message = "Student delete successfully." });
-            }
-            else
-            {
-                throw new Exception("Student deletion failed.");
-            }
+        try 
+        { 
+        
+                var deleted = await _studentService.DeleteStudentAsync(key);
+                return Json(new { success = true, message = "Student delete successfully." });
         }
         catch (UserFriendlyException ex)
         {
-            return Json(new { message = $"Failed to update student. Error: {ex.Message}" });
+            return Json(new { success = false, message = $"Failed to delete student. Error: {ex.Message}" });
         }
         catch (Exception ex)
         {
-            return Json(new { message = $"Failed to update student. Error: {ex.Message}" });
+            return Json(new { success = false, message = $"Failed to delete student. Error: {ex.Message}" });
         }
 
 

@@ -114,6 +114,11 @@ public class CallStoredProcedureRepository : ICallStoredProcedureRepository
         }
     }
 
+    public Task<string> CallReturnBookProcedureAsync(int studentId, int bookId, DateTime time)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<List<StudentRatingResult>> CallSortStudentRatingAsync()
     {
         try 
