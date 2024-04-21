@@ -1,5 +1,6 @@
 ﻿using BLL.MappingProfiles;
 using BLL.Services.HobbieService;
+using BLL.Services.StudentBookService;
 using BLL.Services.StudentDormitoryService;
 using BLL.Services.StudentService;
 using BLL.Services.SubjectService;
@@ -24,6 +25,7 @@ public static class BllDependencyExtension
        .WriteTo.File("Logs/applog-.txt", rollingInterval: RollingInterval.Day);
         services.AddScoped<IHobbieService, HobbieService>();
         services.AddScoped<IStudentService, StudentService>();
+        services.AddScoped<IStudentBookDetails, StudentBookDetail>();
         services.AddScoped<ITeacherService, TeacherService>();
         services.AddScoped<ISubjectService, SubjectService>();
         services.AddScoped<IStudentDormitoryService, StudentDormitoryService>();

@@ -24,4 +24,12 @@
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Handling\Handling.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="SystemExeptionHandling\" />
+  </ItemGroup>
+
 </Project>

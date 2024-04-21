@@ -1,16 +1,21 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using System.Data.SqlClient;
 
-public static class ExceptionTranslator
+public class ExceptionHandler : Exception
 {
-    public static Exception Translate(Exception ex)
+    public ExceptionHandler() : base() { }
+    public ExceptionHandler(Exception ex) : base(ex.Message, ex) { }
+    public ExceptionHandler(string message) : base(message) { }
+
+    public ExceptionHandler(string message, Exception innerException) : base(message, innerException) { }
+
+    public static ExceptionHandler FromSqlException(SqlException ex)
     {
-        if (ex is SqlException sqlEx)
-        {
-            return UserFriendlyException.FromSqlException(sqlEx);
-        }
-        else
-        {
-            return UserFriendlyException.FromException(ex);
-        }
+
+        return new ExceptionHandler(ex.Message, ex);
+    }
+
+    public static ExceptionHandler FromException(Exception ex)
+    {
+        return new ExceptionHandler(ex.Message, ex);
     }
 }

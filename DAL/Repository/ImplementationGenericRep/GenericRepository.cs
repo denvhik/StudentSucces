@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using DAL.Models;
 using Microsoft.Extensions.Configuration;
-using DAL.SystemExeptionHandling;
+using Handling;
 
 namespace DAL.Repository.Implementation;
 public class GenericRepository<T> : IGenericRepository<T> where T : class
@@ -58,6 +58,18 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
+    public async Task<List<T>> GetPagingAsync(int pageindex, int pagesize)
+    {
+        try
+        {
+            var result = await _dbSet.Skip((pageindex - 1) * pagesize).Take(pagesize).ToListAsync();
+            return result;
+        }
+        catch (Exception ex)
+        {
+            throw SystemExeptionHandle.FromSystemException(ex);
+        }
+    }
 
     public async Task<T> GetByIdAsync(int? id)
     {

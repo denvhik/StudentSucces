@@ -8,17 +8,12 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
         builder.Services.AddControllersWithViews().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null).AddRazorRuntimeCompilation();
         builder.Services.AddBllService();
         builder.Services.AddAdoServices();
-        //builder.Services.AddAntiforgery(options => 
-        //{
-        //    options.HeaderName = "X-CSRF-TOKEN";
-        //});
-
+        builder.Services.AddResponseCompression(options => options.EnableForHttps=true);
         var app = builder.Build();
-
+        app.UseResponseCompression();
         app.Use(async (context, next) => {
             string path = context.Request.Path;
             if (path.EndsWith(".css") || path.EndsWith(".js"))
@@ -32,6 +27,14 @@ public class Program
             }
             await next();
         });
+        app.UseStaticFiles(new StaticFileOptions()
+        {
+            OnPrepareResponse = ctx =>
+            {
+                ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=600");
+            }
+        });
+
         if (!app.Environment.IsDevelopment())
         {
             app.UseExceptionHandler("/Home/Error");

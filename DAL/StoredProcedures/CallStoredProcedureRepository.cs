@@ -4,8 +4,7 @@ using Dapper;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using Microsoft.Extensions.Configuration;
-using DAL.SystemExeptionHandling;
-
+using Handling;
 namespace DAL.StoredProcedures;
 
 public class CallStoredProcedureRepository : ICallStoredProcedureRepository
@@ -120,9 +119,7 @@ public class CallStoredProcedureRepository : ICallStoredProcedureRepository
         var parameters = new DynamicParameters();
         parameters.Add("@StudentID", studentId);
         parameters.Add("@BookID", bookId);
-        parameters.Add("@CheckEndDate", time);
-        parameters.Add("@ErrorMessage", dbType: DbType.String, direction: ParameterDirection.Output);
-
+        parameters.Add("@ReturnDate", time);
         try
         {
             await connection.ExecuteAsync("Sp_ReturnBook", parameters, commandType: CommandType.StoredProcedure);
@@ -131,9 +128,9 @@ public class CallStoredProcedureRepository : ICallStoredProcedureRepository
         {
             throw SystemExeptionHandle.FromSystemException(ex);
         }
-        var errorMessage = parameters.Get<string>("@ErrorMessage");
 
-        return errorMessage;
+        string message = "Success";
+        return message;
     }
 
     public async Task<List<StudentRatingResult>> CallSortStudentRatingAsync()
@@ -158,22 +155,19 @@ public class CallStoredProcedureRepository : ICallStoredProcedureRepository
         var parameters = new DynamicParameters();
         parameters.Add("@StudentID", studentId);
         parameters.Add("@BookID", bookId);
-        //parameters.Add("@ErrorMessage", dbType: DbType.String, direction: ParameterDirection.Output);
-
         try
         {
             await connection.ExecuteAsync("Sp_TakeBook", parameters, commandType: CommandType.StoredProcedure);
         }
         catch(SqlException ex) 
         {
-            throw new Exception(ex.Message);
+            throw SystemExeptionHandle.FromSystemException(ex);
         }
         catch (Exception ex)
         {
             throw SystemExeptionHandle.FromSystemException(ex);
         }
-        var errorMessage = parameters.Get<string>("@ErrorMessage");
-        
-        return errorMessage;
+        string message = "Success";
+        return message;
     }
 }

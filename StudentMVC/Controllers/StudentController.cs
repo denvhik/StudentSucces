@@ -6,17 +6,20 @@ using BLL.StudentDto;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace StudentMVC.Controllers;
 
 [Route("[controller]/[action]")]
 public class StudentController : Controller
 {
-    private IStudentService _studentService;
-
-    public StudentController(IStudentService studentService)
+    private  readonly IStudentService _studentService;
+    private readonly IMemoryCache _memoryCache;
+    private readonly string CachKey = "CachStudentKey";
+    public StudentController(IStudentService studentService, IMemoryCache memoryCache)
     {
         _studentService = studentService;
+        _memoryCache = memoryCache;
     }
 
     [HttpGet]
@@ -29,25 +32,33 @@ public class StudentController : Controller
         //int reskip = (pg - 1) * pageSize;
         //var data = students.Skip(reskip).Take(pager.PageSize).ToList();
         //ViewBag.Pager = pager;
-        
             return View();
- 
-       
     }
     [HttpPost]
     public async Task<IActionResult> BookMenagment(int StudentId, int BookId, [Optional]DateTime? DateTime) 
     {
-       if (DateTime is null) 
-       {
-           var takebook = await _studentService.TakeBook(StudentId, BookId);
-            return Json(takebook);
-       }
-        var returnbook = await _studentService.ReturningBook(StudentId, BookId, (DateTime)DateTime);
-        return Json(returnbook);
+        try
+        {
+            if (DateTime is null)
+            {
+                var takebook = await _studentService.TakeBook(StudentId, BookId);
+                return  Json(new { succes = true, message = $"Your taken book successesfuly" });
+            };
+            
+            var returnbook = await _studentService.ReturningBook(StudentId, BookId, (DateTime)DateTime);
+            return Json(new { succes = true, message =$"Your returned book successesfuly" });
+        }
+        catch (UserFriendlyException ex)
+        {
+            return Json(new { success = false, message = $"{ex.Message}" });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { succes = false, message = $"{StatusCode(500, ex.Message)}" });
+        }
     }
 
     [HttpGet]
-
     public async Task<IActionResult> Get(DataSourceLoadOptions loadOptions)
     {
         var students = await _studentService.GetStudentAsync();
@@ -58,6 +69,7 @@ public class StudentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Post(string values)
     {
+        if (ModelState.IsValid) return BadRequest(ModelState); 
         try
         {
             var valuesDict = JsonConvert.DeserializeObject<StudentDTO>(values);
@@ -69,7 +81,7 @@ public class StudentController : Controller
             }
             return Json(new { success = true, message = $"Student Added successfully" });
         }
-        catch (UserFriendlyException ex) 
+        catch (ExceptionHandler ex) 
         {
             return Json(new { success = false,message = $"Failed  add student. Error: {ex.Message}" });
         }
@@ -79,6 +91,7 @@ public class StudentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Put(int key,string values)
     {
+        if (ModelState.IsValid) return BadRequest(ModelState);
         try
         {
             var model = await _studentService.GetByIdAsync(key);
@@ -92,7 +105,7 @@ public class StudentController : Controller
             }
             return Json(new {success=true, message = $"student updated succes" });
         } 
-        catch (UserFriendlyException ex) 
+        catch (ExceptionHandler ex) 
         {
             return Json(new { success = false, message = $"Failed to update student. Error: {ex.Message}" });
         }
@@ -106,13 +119,14 @@ public class StudentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int key)
     {
+
         try 
         { 
         
                 var deleted = await _studentService.DeleteStudentAsync(key);
                 return Json(new { success = true, message = "Student delete successfully." });
         }
-        catch (UserFriendlyException ex)
+        catch (ExceptionHandler ex)
         {
             return Json(new { success = false, message = $"Failed to delete student. Error: {ex.Message}" });
         }
@@ -127,14 +141,6 @@ public class StudentController : Controller
 
     
 
-    //    [HttpDelete]
-    //    public async Task Delete(int key)
-    //    {
-    //        var model = await _context.Students.FirstOrDefaultAsync(item => item.StudentId == key);
-
-    //        _context.Students.Remove(model);
-    //        await _context.SaveChangesAsync();
-    //    }
 
 
     private void PopulateModel(StudentDTO model, IDictionary values)

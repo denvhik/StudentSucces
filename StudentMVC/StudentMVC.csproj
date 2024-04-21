@@ -5,13 +5,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Controllers\ORMDataModel1.xpo" />
+    <None Remove="Controllers\ORMDataModel1.xpo.diagram" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\ADO,NET\AdoNet.csproj" />
     <ProjectReference Include="..\BLL\BLL.csproj" />
     <ProjectReference Include="..\DAL\DAL.csproj" />
-    <ProjectReference Include="..\StudentApi\StudentApi.csproj" />
+    <ProjectReference Include="..\StudentApi\StudentApi.Console.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="bootstrap" Version="5.3.3" />
+    <PackageReference Include="DevExpress.Xpo" Version="23.2.5" />
     <PackageReference Include="DevExtreme.AspNet.Core" Version="23.2.5" />
     <PackageReference Include="DevExtreme.AspNet.Data" Version="3.0.0" />
     <PackageReference Include="DevExtreme.Web" Version="23.1.9" />

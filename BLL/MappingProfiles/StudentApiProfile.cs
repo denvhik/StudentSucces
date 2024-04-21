@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BLL.StudentDto;
+using DAL.BookDetailsDTO;
 using DAL.Models;
 namespace BLL.MappingProfiles;
 public class StudentApiProfile:Profile
@@ -10,5 +11,6 @@ public class StudentApiProfile:Profile
         CreateMap<GroupDTO, Group>().ReverseMap();
         CreateMap<SubjectDTO, Subject>().ReverseMap();
         CreateMap<HobbieDTO, Hobbie>().ReverseMap();
+        CreateMap<BllStudentBookDTO,DalBookDetailsDto>().ReverseMap();
     }
 }

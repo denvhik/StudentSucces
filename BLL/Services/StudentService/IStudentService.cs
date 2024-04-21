@@ -4,6 +4,7 @@ namespace BLL.Services.StudentService;
 public interface IStudentService
 {
     Task<List<StudentDTO>> GetStudentAsync();
+    Task<List<StudentDTO>> GetPagingAsync(int pageIndex, int pageSize);
     Task AddStudentAsync(StudentDTO student);
     Task UpgradeStudentAsync(StudentDTO studentDTO);
     Task <StudentDTO>GetStudentByIdAsync( int studentid);

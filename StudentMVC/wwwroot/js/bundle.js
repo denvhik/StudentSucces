@@ -1,4 +1,4 @@
-﻿    function reloadGrid() {
+    function reloadGrid() {
         
         var grid = $("#StudentGrid").dxDataGrid("instance");
         grid.refresh();

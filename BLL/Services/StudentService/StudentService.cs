@@ -4,9 +4,9 @@ using DAL.Models;
 using DAL.Repository.Implementation;
 using DAL.StoredProcedureDTO;
 using DAL.StoredProcedures;
-using Microsoft.Data.SqlClient;
+using Handling;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using System.Net;
 
 namespace BLL.Services.StudentService;
 public class StudentService : IStudentService
@@ -16,33 +16,34 @@ public class StudentService : IStudentService
     private readonly IGenericRepository<Student> _genericRepository;
     private readonly IGenericRepository<StudentBook> _studentBookRepository;
     private readonly ICallStoredProcedureRepository _callStoredProcedureRepository;
-    public StudentService(IGenericRepository<Student> genericRepository,IMapper mapper,ICallStoredProcedureRepository callStoredProcedureRepository, ILogger<StudentService> logger,IGenericRepository<StudentBook> studentBookRepository)
+    private readonly UserFriendlyException _userFriendlyException;
+    private readonly IMemoryCache _memoryCache;
+    public StudentService(IGenericRepository<Student> genericRepository,IMapper mapper,
+        ICallStoredProcedureRepository callStoredProcedureRepository, 
+        ILogger<StudentService> logger,
+        IGenericRepository<StudentBook> studentBookRepository, IMemoryCache memoryCache)
     {
         _callStoredProcedureRepository = callStoredProcedureRepository;
         _mapper = mapper;
         _genericRepository = genericRepository;
         _logger = logger;
         _studentBookRepository = studentBookRepository;
+        _memoryCache = memoryCache;
     }
 
     public async Task AddStudentAsync(StudentDTO studentDto)
     {
         try
         {
-            //_logger.LogInformation("start method AddStudentAsync");
             var model = _mapper.Map<Student>(studentDto);
-            //_logger.LogInformation($"Student: {model}");
             await _genericRepository.AddAsync(model);
-            //_logger.LogInformation($"Model:{model}");
+            _logger.LogInformation($"Model:{model}");
             await _genericRepository.SaveChangesAsync();
         }
-        catch (SqlException ex)
+        catch (Exception ex)
         {
-            throw UserFriendlyException.FromSqlException(ex);
-        }
-        catch (Exception ex) 
-        {
-            throw UserFriendlyException.FromException(ex);
+            _logger.LogError(ex.Message);
+            throw new UserFriendlyException(ex.Message, ex);
         }
     }
 
@@ -56,13 +57,10 @@ public class StudentService : IStudentService
             await _genericRepository.SaveChangesAsync();
             return true;
         }
-        catch (SqlException ex)
-        {
-            throw UserFriendlyException.FromSqlException(ex);
-        }
         catch (Exception ex)
         {
-            throw UserFriendlyException.FromException(ex);
+            _logger.LogError(ex.Message);
+            throw new UserFriendlyException(ex.Message, ex);
         }
     }
 
@@ -70,21 +68,32 @@ public class StudentService : IStudentService
     {
         try
         {
-            _logger.LogInformation("Початок методу GetStudentAsync");
-            var studentModel = await _genericRepository.GetAllAsync();
-            _logger.LogInformation($"Student: {studentModel}");
-            var studentDTO = _mapper.Map<List<StudentDTO>>(studentModel).ToList();
-            _logger.LogInformation($"Student: {studentDTO}");
+            var cacheKey = "studentsCacheKey";
+            if (!_memoryCache.TryGetValue(cacheKey, out List<StudentDTO> studentDTO))
+            {
+                _logger.LogInformation("Дані не знайдено в кеші, отримання з джерела даних");//
+                var studentModel = await _genericRepository.GetAllAsync();
+                studentDTO = _mapper.Map<List<StudentDTO>>(studentModel).ToList();
+                _logger.LogInformation($"Student: {studentDTO}");
+                
+                _memoryCache.Set(cacheKey, studentDTO, new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) 
+                });
+            }
+            else
+            {
+                _logger.LogInformation("Дані знайдено в кеші");
+            }
+
             return studentDTO;
         }
-        catch (SqlException ex)
+        catch (SystemExeptionHandle ex)
         {
-            throw UserFriendlyException.FromSqlException(ex);
+            _logger.LogError(ex.Message, ex);
+            throw new UserFriendlyException(ex.Message, ex);
         }
-        catch (Exception ex)
-        {
-            throw UserFriendlyException.FromException(ex);
-        }
+        
     }
 
     public async Task UpgradeStudentAsync( StudentDTO studentDTO)
@@ -95,6 +104,7 @@ public class StudentService : IStudentService
             var studentById = await _genericRepository.GetByIdAsync(studentDTO.Id);
             _logger.LogInformation($"{studentById}");
             if (studentById == null) return;
+
             studentById.TicketNumber = studentDTO.TicketNumber;
             studentById.FirstName = studentDTO.FirstName;
             studentById.LastName = studentDTO.LastName;
@@ -109,13 +119,10 @@ public class StudentService : IStudentService
             _logger.LogInformation($"{studentById}");
       
         }
-        catch (SqlException ex)
-        {
-            throw UserFriendlyException.FromSqlException(ex);
-        }
         catch (Exception ex)
         {
-            throw UserFriendlyException.FromException(ex);
+            _logger.LogError(ex.Message);
+            throw new UserFriendlyException(ex.Message, ex);
         }
     }
 
@@ -123,24 +130,14 @@ public class StudentService : IStudentService
     {
         try
         {
-            if (month > 0 || month <= 12)
-            {
                 _logger.LogInformation("start method CallCalculateScholarshipForAllStudentAsync");
                 await _callStoredProcedureRepository.CallCalculateScholarshipForAllStudentAsync(month, year);
                 _logger.LogInformation("end method CallCalculateScholarshipForAllStudentAsync");
-            }
-            else 
-            {
-                return;
-            }
-        }
-        catch (SqlException ex)
-        {
-            throw UserFriendlyException.FromSqlException(ex);
         }
         catch (Exception ex)
         {
-            throw UserFriendlyException.FromException(ex);
+            _logger.LogError(ex.Message);
+            throw new UserFriendlyException(ex.Message, ex);
         }
     }
     public  async Task <IEnumerable<TopScoreResultDTO>> CallGetTopScoresProcedureAsync(int score)
@@ -153,13 +150,10 @@ public class StudentService : IStudentService
             _logger.LogInformation($"end method CallGetTopScoresProcedureAsync");
             return result;
         }
-        catch (SqlException ex)
-        {
-            throw UserFriendlyException.FromSqlException(ex);
-        }
         catch (Exception ex)
         {
-            throw UserFriendlyException.FromException(ex);
+            _logger.LogError(ex.Message);
+            throw new UserFriendlyException(ex.Message, ex);
         }
     }
 
@@ -171,13 +165,10 @@ public class StudentService : IStudentService
             await _callStoredProcedureRepository.CallInsertStudentsDormitoryProcedureAsync();
             _logger.LogInformation("end method  CallInsertStudentsDormitoryProcedureAsync");
         }
-        catch (SqlException ex)
-        {
-            throw UserFriendlyException.FromSqlException(ex);
-        }
         catch (Exception ex)
         {
-            throw UserFriendlyException.FromException(ex);
+            _logger.LogError(ex.Message);
+            throw new UserFriendlyException(ex.Message, ex);
         }
     }
 
@@ -190,13 +181,10 @@ public class StudentService : IStudentService
             _logger.LogInformation("end method CallOverdueBookReportAsync");
             return result;
         }
-        catch (SqlException ex)
-        {
-            throw UserFriendlyException.FromSqlException(ex);
-        }
         catch (Exception ex)
         {
-            throw UserFriendlyException.FromException(ex);
+            _logger.LogError(ex.Message);
+            throw new UserFriendlyException(ex.Message, ex);
         }
     }
 
@@ -209,13 +197,10 @@ public class StudentService : IStudentService
             _logger.LogInformation("start method CallSortStudentRatingAsync");
             return result;
         }
-        catch (SqlException ex)
-        {
-            throw UserFriendlyException.FromSqlException(ex);
-        }
         catch (Exception ex)
         {
-            throw UserFriendlyException.FromException(ex);
+            _logger.LogError(ex.Message);
+            throw new UserFriendlyException(ex.Message, ex);
         }
     }
 
@@ -227,13 +212,10 @@ public class StudentService : IStudentService
             var result = _mapper.Map<StudentDTO>(student);
             return result;
         }
-        catch (SqlException ex)
-        {
-            throw UserFriendlyException.FromSqlException(ex);
-        }
         catch (Exception ex)
         {
-            throw UserFriendlyException.FromException(ex);
+            _logger.LogError(ex.Message);
+            throw new UserFriendlyException(ex.Message, ex);
         }
     }
     public async Task<string> ReturningBook(int studentId,int bookId,DateTime EndTime)
@@ -243,13 +225,10 @@ public class StudentService : IStudentService
             var studentbook = await _callStoredProcedureRepository.CallReturnBookProcedureAsync(studentId, bookId, EndTime);
             return studentbook;
         }
-        catch (SqlException ex) 
-        {
-            throw UserFriendlyException.FromSqlException(ex);
-        }
         catch (Exception ex)
         {
-            throw UserFriendlyException.FromException(ex);
+            _logger.LogError(ex.Message);
+            throw new UserFriendlyException(ex.Message, ex);
         }
     }
 
@@ -267,13 +246,42 @@ public class StudentService : IStudentService
             var studentbook = await _callStoredProcedureRepository.CallTakeBookProcedureAsync(studentId, BookId);
             return studentbook;
         }
-        catch (SqlException ex)
+      
+        catch (Exception ex)
         {
-            throw UserFriendlyException.FromSqlException(ex);
+            _logger.LogError(ex.Message);
+            throw new UserFriendlyException(ex.Message, ex);
+        }
+    }
+
+    public async Task<List<StudentDTO>> GetPagingAsync(int pageindex, int pagesize)
+    {
+        try
+        {
+            var cacheKey = "studentsCacheKey";
+            if (!_memoryCache.TryGetValue(cacheKey, out List<StudentDTO> studentDTO))
+            {
+                _logger.LogInformation("Дані не знайдено в кеші, отримання з джерела даних");
+                var studentModel = await _genericRepository.GetPagingAsync(pageindex,pagesize);
+                studentDTO = _mapper.Map<List<StudentDTO>>(studentModel).ToList();
+                _logger.LogInformation($"Student: {studentDTO}");
+
+                _memoryCache.Set(cacheKey, studentDTO, new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+                });
+            }
+            else
+            {
+                _logger.LogInformation("Дані знайдено в кеші");
+            }
+
+            return studentDTO;
         }
         catch (Exception ex)
         {
-            throw UserFriendlyException.FromException(ex);
+            _logger.LogError(ex.Message, ex);
+            throw new UserFriendlyException(ex.Message, ex);
         }
     }
 }

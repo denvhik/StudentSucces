@@ -5,7 +5,9 @@ namespace BLL.StudentDto;
 public class StudentDTO
 {
     public int? Id { get; set; }
+    [Required]
     public string FirstName { get; set; }
+    [Required]
     public string LastName { get; set; }
     public string MiddleName { get; set; }
     [Required]
