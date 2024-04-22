@@ -1,7 +1,9 @@
 ﻿using BLL.Services.StudentService;
 using BLL.StudentDto;
+using Handling;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Data.SqlClient;
 
 namespace StudentWebApi.Controllers;
 
@@ -18,7 +20,7 @@ public class StudentController : ControllerBase
         _logger = logger;
     }
     [HttpGet]
-    public async Task<ActionResult<List<StudentDTO>>> GetStudent()
+    public async Task<List<StudentDTO>> GetStudent()
     {
         return await _studentService.GetStudentAsync();
 
@@ -30,8 +32,14 @@ public class StudentController : ControllerBase
         {
             throw new ArgumentException();
         }
-        return await _studentService.GetStudentByParametrAsync(skip, take);
-
+        try
+        {
+            await _studentService.GetStudentByParametrAsync(skip, take);
+        } catch (Exception )
+        {
+            throw new Exception();
+        }
+        return Ok(new List<StudentDTO>());
     }
     [HttpPost("Create")]
     public async Task<IActionResult> CreateNewStudent([FromBody]StudentDTO studentDTO) 
@@ -40,8 +48,36 @@ public class StudentController : ControllerBase
         {
             throw new ValidationException();
         }
-         await _studentService.AddStudentAsync(studentDTO);
+        await _studentService.AddStudentAsync(studentDTO);
         return Created();
     }
-    [Htt]
+    [HttpPut("Update")]
+    public async Task<IActionResult> UpdateStudent([FromBody] StudentDTO studentDTO)
+    {
+        try
+        {
+            await _studentService.UpgradeStudentAsync(studentDTO);
+
+        }
+        catch (ValidationException)
+        {
+            throw new ValidationException();
+        }
+        return Ok("StudentCreatedSuccesful");
+    }
+    [HttpDelete("DeleteStudent/{id:int}")]
+    public async Task<ActionResult> DeleteStudent (int id) 
+    {
+        if (id <= 0) 
+        {
+            throw new ArgumentException();
+        }
+        var student =await _studentService.DeleteStudentAsync(id);
+        if (!student)
+        {
+            throw new KeyNotFoundException();
+        }
+        return Ok($"the student with id:{id}deleted succesfuly");
+    }
+
 }

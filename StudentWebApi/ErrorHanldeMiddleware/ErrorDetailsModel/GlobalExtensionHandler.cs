@@ -48,7 +48,6 @@ public class GlobalExtensionHandler : IExceptionHandler
                 {
                    Status = (int)HttpStatusCode.Unauthorized,
                    Title = "Unauthorized",
-
                 };
                 break;
             default:
