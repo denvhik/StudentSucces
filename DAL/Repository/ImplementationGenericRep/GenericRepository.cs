@@ -58,11 +58,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
-    public async Task<List<T>> GetPagingAsync(int pageindex, int pagesize)
+    public async Task<List<T>> GetPagingAsync(int skip, int take)
     {
         try
         {
-            var result = await _dbSet.Skip((pageindex - 1) * pagesize).Take(pagesize).ToListAsync();
+            var result = await _dbSet.Skip(skip).Take(take).ToListAsync();
             return result;
         }
         catch (Exception ex)

@@ -254,7 +254,7 @@ public class StudentService : IStudentService
         }
     }
 
-    public async Task<List<StudentDTO>> GetPagingAsync(int pageindex, int pagesize)
+    public async Task<List<StudentDTO>> GetStudentByParametrAsync(int pageindex, int pagesize)
     {
         try
         {

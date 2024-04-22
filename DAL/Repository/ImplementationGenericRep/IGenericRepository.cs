@@ -7,5 +7,5 @@ public interface IGenericRepository<T> where T : class
     Task<T> UpdateAsync(T entity);
     Task<T> DeleteByIdAsync(int id);
     Task SaveChangesAsync();
-    Task<List<T>> GetPagingAsync(int pageindex, int pagesize);
+    Task<List<T>> GetPagingAsync(int skip , int take);
 }
