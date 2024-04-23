@@ -92,7 +92,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         try
         {
-            _dbSet.Update(entity);
+             _dbSet.Update(entity);
             await _studentSuccesContext.SaveChangesAsync();
             return entity;
         } 

@@ -9,8 +9,8 @@ namespace BLL.Services.TeacherService;
 
 public interface ITeacherService
 {
-    Task<IEnumerable<TeacherDTO>> GetTeacherAsync();
+    Task<List<TeacherDTO>> GetTeacherAsync();
     Task AddTeacherAsync(TeacherDTO hobbie);
-    Task UpgradeTeacherAsync(int id, TeacherDTO teacherDTO);
+    Task UpgradeTeacherAsync(TeacherDTO teacherDTO);
     Task<bool> DeleteTeacherAsync(int id);
 }

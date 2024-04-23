@@ -157,12 +157,12 @@ public class StudentService : IStudentService
         }
     }
 
-    public async Task CallInsertStudentsDormitoryProcedureAsync()
+    public async Task<bool> CallInsertStudentsDormitoryProcedureAsync(List<int>studentId, int dormitoryId)
     {
         try
         {
             _logger.LogInformation("start method CallInsertStudentsDormitoryProcedureAsync");
-            await _callStoredProcedureRepository.CallInsertStudentsDormitoryProcedureAsync();
+            await _callStoredProcedureRepository.CallInsertStudentsDormitoryProcedureAsync(studentId, dormitoryId);
             _logger.LogInformation("end method  CallInsertStudentsDormitoryProcedureAsync");
         }
         catch (Exception ex)
@@ -170,6 +170,7 @@ public class StudentService : IStudentService
             _logger.LogError(ex.Message);
             throw new UserFriendlyException(ex.Message, ex);
         }
+        return true;
     }
 
     public async Task<IEnumerable<OverdueBookReportDTO>> CallOverdueBookReportAsync()
@@ -218,6 +219,12 @@ public class StudentService : IStudentService
             throw new UserFriendlyException(ex.Message, ex);
         }
     }
+    public async Task<StudentDTO> GetStudentByIdAsync(int studentid)
+    {
+        var studentbyid = await _genericRepository.GetByIdAsync(studentid);
+        var studentDTO = _mapper.Map<StudentDTO>(studentbyid);
+        return studentDTO;
+    }
     public async Task<string> ReturningBook(int studentId,int bookId,DateTime EndTime)
     {
         try
@@ -231,14 +238,6 @@ public class StudentService : IStudentService
             throw new UserFriendlyException(ex.Message, ex);
         }
     }
-
-    public async Task<StudentDTO> GetStudentByIdAsync(int studentid)
-    {
-      var studentbyid = await _genericRepository.GetByIdAsync(studentid);
-        var studentDTO = _mapper.Map<StudentDTO>(studentbyid);
-        return studentDTO;
-    }
-
     public  async Task<string> TakeBook(int studentId, int BookId)
     {
         try

@@ -59,14 +59,14 @@ public class TeacherService:ITeacherService
         }
     }
 
-    public async Task<IEnumerable<TeacherDTO>> GetTeacherAsync()
+    public async Task<List<TeacherDTO>> GetTeacherAsync()
     {
         try
         {
             _logger.LogInformation("Початок методу GetTeacherAsync");
             var Teachers = await _genericRepository.GetAllAsync();
             _logger.LogInformation($"Teachers: {Teachers}");
-            var TeacherDTO = _mapper.Map<IEnumerable<TeacherDTO>>(Teachers);
+            var TeacherDTO = _mapper.Map<List<TeacherDTO>>(Teachers);
             _logger.LogInformation($"Teachers: {TeacherDTO}");
             return TeacherDTO;
         }
@@ -80,15 +80,15 @@ public class TeacherService:ITeacherService
         }
     }
 
-    public async Task UpgradeTeacherAsync(int id, TeacherDTO TeacherDTO)
+    public async Task UpgradeTeacherAsync(TeacherDTO teacherDTO)
     {
         try
         {
             _logger.LogInformation("start method UpgradeStudentAsync");
-            var TeacherById = await _genericRepository.GetByIdAsync(id);
+            var TeacherById = await _genericRepository.GetByIdAsync(teacherDTO.Id);
             _logger.LogInformation($"{TeacherById}");
             if (TeacherById == null) return;
-            TeacherById.TeacherName = TeacherDTO.TeacherName;
+            TeacherById.TeacherName = teacherDTO.TeacherName;
             await _genericRepository.UpdateAsync(TeacherById);
             _logger.LogInformation($"{TeacherById}");
 

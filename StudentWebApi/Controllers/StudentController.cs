@@ -1,9 +1,11 @@
 ﻿using BLL.Services.StudentService;
 using BLL.StudentDto;
+using DAL.Models;
 using Handling;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Data.SqlClient;
+using System.Runtime.InteropServices;
 
 namespace StudentWebApi.Controllers;
 
@@ -20,10 +22,17 @@ public class StudentController : ControllerBase
         _logger = logger;
     }
     [HttpGet]
+
     public async Task<List<StudentDTO>> GetStudent()
     {
-        return await _studentService.GetStudentAsync();
+        List<StudentDTO> studentDTOs = new List<StudentDTO>();
 
+        studentDTOs= await _studentService.GetStudentAsync();
+        if (studentDTOs != null) 
+        {
+            throw new KeyNotFoundException();
+        }
+        return studentDTOs;
     }
     [HttpGet("GetByParametrStudent/{skip:int}/{take:int}")]
     public async Task<ActionResult<List<StudentDTO>>> GetByParametrStudent(int skip, int take)
@@ -42,17 +51,25 @@ public class StudentController : ControllerBase
         return Ok(new List<StudentDTO>());
     }
     [HttpPost("Create")]
-    public async Task<IActionResult> CreateNewStudent([FromBody]StudentDTO studentDTO) 
+    public async Task<ActionResult> CreateNewStudent([FromBody]StudentDTO studentDTO) 
     {
         if (!TryValidateModel(studentDTO)) 
         {
             throw new ValidationException();
         }
-        await _studentService.AddStudentAsync(studentDTO);
+        try 
+        { 
+            await _studentService.AddStudentAsync(studentDTO);
+        }
+        catch (Exception) 
+        {
+            throw new UserFriendlyException("something went wrong");
+        }
+
         return Created();
     }
     [HttpPut("Update")]
-    public async Task<IActionResult> UpdateStudent([FromBody] StudentDTO studentDTO)
+    public async Task<ActionResult> UpdateStudent([FromBody] StudentDTO studentDTO)
     {
         try
         {
@@ -63,7 +80,7 @@ public class StudentController : ControllerBase
         {
             throw new ValidationException();
         }
-        return Ok("StudentCreatedSuccesful");
+        return Ok("Student updated Succesful");
     }
     [HttpDelete("DeleteStudent/{id:int}")]
     public async Task<ActionResult> DeleteStudent (int id) 
@@ -79,5 +96,32 @@ public class StudentController : ControllerBase
         }
         return Ok($"the student with id:{id}deleted succesfuly");
     }
-
+    [HttpPost("BookMenagment")]
+    public async Task<ActionResult<string>> BookMenagment(int studentId, int bookId, [Optional] DateTime? time) 
+    {
+        try
+        {
+            if (time is null)
+            {
+                var takebook = await _studentService.TakeBook(studentId, bookId);
+                return Ok("succesfuly");
+            }
+            var returnbook = await _studentService.ReturningBook(studentId, bookId, (DateTime)time);
+            return Ok("succesfuly returning book");   
+        }
+        catch (UserFriendlyException ex)
+        {
+            throw new UserFriendlyException(ex);
+        }
+        catch (Exception ) 
+        {
+            throw new  Exception();
+        }
+    }
+    [HttpPost("InsertStudentToDormitory")]
+    public async Task<ActionResult> AddSrudentToDormotory(List<int> studentId,[Optional]int DormitoryId) 
+    {
+        var result = await _studentService.CallInsertStudentsDormitoryProcedureAsync(studentId,DormitoryId);
+        return Ok(result);
+    }
 }

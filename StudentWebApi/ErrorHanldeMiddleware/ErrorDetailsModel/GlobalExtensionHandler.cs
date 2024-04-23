@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using Handling;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
@@ -27,6 +28,14 @@ public class GlobalExtensionHandler : IExceptionHandler
                     Title = exception.GetType().Name
                 };
                 break;
+            case  KeyNotFoundException:
+                problemDetails = new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "5001",
+                    Detail = exception.GetType().Name
+                };
+                break;
             case ArgumentException:
                 problemDetails = new ProblemDetails
                 
@@ -48,6 +57,22 @@ public class GlobalExtensionHandler : IExceptionHandler
                 {
                    Status = (int)HttpStatusCode.Unauthorized,
                    Title = "Unauthorized",
+                };
+                break;
+            case SystemExeptionHandle:
+                problemDetails = new ProblemDetails
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Title = "5001",
+                    Detail = exception.GetType().Name
+                };
+                break;
+                case UserFriendlyException:
+                problemDetails = new ProblemDetails
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Title = "5001",
+                    Detail = exception.Message
                 };
                 break;
             default:

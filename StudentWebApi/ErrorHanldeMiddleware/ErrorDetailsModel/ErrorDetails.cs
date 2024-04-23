@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 namespace StudentWebApi.ErrorHanldeMiddleware.ErrorDetailsModel;
+
 public class ErrorDetails
 {
     public int StatusCode { get; set; }

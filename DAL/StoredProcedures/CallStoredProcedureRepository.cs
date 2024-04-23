@@ -78,14 +78,29 @@ public class CallStoredProcedureRepository : ICallStoredProcedureRepository
         }
     }
 
-    public async Task<bool> CallInsertStudentsDormitoryProcedureAsync()
+    public async Task<bool> CallInsertStudentsDormitoryProcedureAsync(List<int>studentId,int dormitoryId)
     {
         try
         {
             using (var connection = new SqlConnection(_configuration.GetConnectionString("StudentConnections")))
             {
-               var result = await  connection.ExecuteAsync("SP_InsertStudentsDormitory", commandType: CommandType.StoredProcedure);
-                return true; 
+                var studentTable = new DataTable();
+                studentTable.Columns.Add("StudentID", typeof(int));
+
+                // Додавання студентів до таблиці
+                foreach (var id in studentId)
+                {
+                    studentTable.Rows.Add(id);
+                }
+
+                var parameters = new DynamicParameters();
+                parameters.Add("@StudentIDs", studentTable.AsTableValuedParameter("StudentIDTableType"));
+                parameters.Add("@DormitoryID", dormitoryId);
+
+                // Виконання збереженої процедури
+                var result = await connection.ExecuteAsync("SP_InsertStudentsDormitory", parameters, commandType: CommandType.StoredProcedure);
+
+                return result > 0;  // Повертає true, якщо було заселено одного або більше студентів
             }
         }
         catch (Exception ex)
@@ -147,7 +162,6 @@ public class CallStoredProcedureRepository : ICallStoredProcedureRepository
         {
             throw SystemExeptionHandle.FromSystemException(ex);
         }
-
     }
     public async Task <string> CallTakeBookProcedureAsync(int studentId, int bookId)
     {
