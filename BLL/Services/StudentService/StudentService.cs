@@ -157,20 +157,21 @@ public class StudentService : IStudentService
         }
     }
 
-    public async Task<bool> CallInsertStudentsDormitoryProcedureAsync(List<int>studentId, int dormitoryId)
+    public async Task<string> CallInsertStudentsDormitoryProcedureAsync(List<int>studentId, int? dormitoryId)
     {
         try
         {
             _logger.LogInformation("start method CallInsertStudentsDormitoryProcedureAsync");
-            await _callStoredProcedureRepository.CallInsertStudentsDormitoryProcedureAsync(studentId, dormitoryId);
+           var result =   await _callStoredProcedureRepository.CallInsertStudentsDormitoryProcedureAsync(studentId, dormitoryId);
             _logger.LogInformation("end method  CallInsertStudentsDormitoryProcedureAsync");
+            return result;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
             throw new UserFriendlyException(ex.Message, ex);
         }
-        return true;
+        
     }
 
     public async Task<IEnumerable<OverdueBookReportDTO>> CallOverdueBookReportAsync()

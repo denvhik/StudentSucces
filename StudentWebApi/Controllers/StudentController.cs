@@ -1,14 +1,11 @@
 ﻿using BLL.Services.StudentService;
 using BLL.StudentDto;
-using DAL.Models;
-using Handling;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using System.Data.SqlClient;
 using System.Runtime.InteropServices;
 
 namespace StudentWebApi.Controllers;
-
+[ApiVersion("1.0")]
 [Route("api/[controller]")]
 [ApiController]
 public class StudentController : ControllerBase
@@ -44,9 +41,10 @@ public class StudentController : ControllerBase
         try
         {
             await _studentService.GetStudentByParametrAsync(skip, take);
-        } catch (Exception )
+        }
+        catch (Exception)
         {
-            throw new Exception();
+            throw new CustomException("Oops something went wrong");
         }
         return Ok(new List<StudentDTO>());
     }
@@ -61,9 +59,9 @@ public class StudentController : ControllerBase
         { 
             await _studentService.AddStudentAsync(studentDTO);
         }
-        catch (Exception) 
+        catch (Exception)
         {
-            throw new UserFriendlyException("something went wrong");
+            throw new CustomException("Oops something went wrong");
         }
 
         return Created();
@@ -109,9 +107,9 @@ public class StudentController : ControllerBase
             var returnbook = await _studentService.ReturningBook(studentId, bookId, (DateTime)time);
             return Ok("succesfuly returning book");   
         }
-        catch (UserFriendlyException ex)
+        catch (UserFriendlyException )
         {
-            throw new UserFriendlyException(ex);
+            throw new CustomException("Oops something went wrong");
         }
         catch (Exception ) 
         {
@@ -119,9 +117,9 @@ public class StudentController : ControllerBase
         }
     }
     [HttpPost("InsertStudentToDormitory")]
-    public async Task<ActionResult> AddSrudentToDormotory(List<int> studentId,[Optional]int DormitoryId) 
+    public async Task<ActionResult<string>> AddSrudentToDormotory(List<int> studentId,int? dormitoryId) 
     {
-        var result = await _studentService.CallInsertStudentsDormitoryProcedureAsync(studentId,DormitoryId);
+         var result = await _studentService.CallInsertStudentsDormitoryProcedureAsync(studentId, dormitoryId);
         return Ok(result);
     }
 }

@@ -1,5 +1,6 @@
 using BLL;
 using DAL;
+using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using StudentWebApi.ErrorHanldeMiddleware;
 using StudentWebApi.ErrorHanldeMiddleware.ErrorDetailsModel;
@@ -20,7 +21,12 @@ public class Program
         builder.Services.AddExceptionHandler<GlobalExtensionHandler>();
         builder.Services.AddProblemDetails();
         builder.Services.AddControllers();
-      
+        builder.Services.AddApiVersioning(x =>
+        {
+            x.DefaultApiVersion = new ApiVersion(1, 0);
+            x.AssumeDefaultVersionWhenUnspecified = true;
+            x.ReportApiVersions = true;
+        });
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration).CreateLogger();
         builder.Host.UseSerilog();

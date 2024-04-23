@@ -67,7 +67,7 @@ public class GlobalExtensionHandler : IExceptionHandler
                     Detail = exception.GetType().Name
                 };
                 break;
-                case UserFriendlyException:
+                case CustomException:
                 problemDetails = new ProblemDetails
                 {
                     Status = StatusCodes.Status500InternalServerError,

@@ -12,7 +12,7 @@ public interface IStudentService
     Task CallCalculateScholarshipForAllStudentAsync(int month,int year);
     Task <StudentDTO> GetByIdAsync(int id);
     Task <IEnumerable<TopScoreResultDTO>>CallGetTopScoresProcedureAsync(int score);
-    Task <bool> CallInsertStudentsDormitoryProcedureAsync(List<int>studentId,int dormitoryId);
+    Task <string> CallInsertStudentsDormitoryProcedureAsync(List<int>studentId,int? dormitoryId);
     Task <IEnumerable<OverdueBookReportDTO>> CallOverdueBookReportAsync();
     Task  <IEnumerable<StudentRatingResult>>CallSortStudentRatingAsync();
     Task<string> ReturningBook(int studentId, int bookId, DateTime dateTime);
