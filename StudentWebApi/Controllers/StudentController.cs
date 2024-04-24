@@ -1,6 +1,13 @@
-﻿using BLL.Services.StudentService;
+﻿using Asp.Versioning;
+using AutoMapper;
+using BLL.Services.StudentService;
 using BLL.StudentDto;
+using DAL.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
+using Sieve.Services;
+using StudentWebApi.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 
@@ -12,51 +19,59 @@ public class StudentController : ControllerBase
 {
     private readonly IStudentService _studentService;
     private readonly ILogger<StudentController> _logger;
+    private readonly SieveProcessor _sieveProcessor;
+    private readonly IMapper _mapper;
 
-    public StudentController(IStudentService studentService, ILogger<StudentController> logger)
+    public StudentController(IStudentService studentService, ILogger<StudentController> logger, SieveProcessor sieveProcessor, IMapper mapper)
     {
         _studentService = studentService;
         _logger = logger;
+        _sieveProcessor = sieveProcessor;
+        _mapper = mapper;
     }
-    [HttpGet]
 
-    public async Task<List<StudentDTO>> GetStudent()
+    [HttpGet("GetStudent")]
+    public async Task<IActionResult> GetStudent([FromQuery] SieveModel model)
     {
         List<StudentDTO> studentDTOs = new List<StudentDTO>();
 
-        studentDTOs= await _studentService.GetStudentAsync();
-        if (studentDTOs != null) 
+        studentDTOs = await _studentService.GetStudentAsync();
+        var studentresult = _mapper.Map<List<StudentApiDto>>(studentDTOs);
+        IQueryable<StudentApiDto> queryableStudents = studentresult.AsQueryable();
+        queryableStudents = _sieveProcessor.Apply(model, queryableStudents);
+        if (queryableStudents == null)
         {
             throw new KeyNotFoundException();
         }
-        return studentDTOs;
+        return Ok(queryableStudents);
     }
-    [HttpGet("GetByParametrStudent/{skip:int}/{take:int}")]
-    public async Task<ActionResult<List<StudentDTO>>> GetByParametrStudent(int skip, int take)
+    [HttpGet("GetByParametrStudent")]
+    public async Task<ActionResult<List<StudentDTO>>> GetByParametrStudent([FromQuery] int skip, int take)
     {
+
+        List<StudentDTO> studentDTOs = new List<StudentDTO>();
+
         if (skip <= 0 || take <= 0)
         {
             throw new ArgumentException();
         }
         try
         {
-            await _studentService.GetStudentByParametrAsync(skip, take);
+            studentDTOs = await _studentService.GetStudentByParametrAsync(skip, take);
         }
         catch (Exception)
         {
             throw new CustomException("Oops something went wrong");
         }
-        return Ok(new List<StudentDTO>());
+        return Ok(studentDTOs);
     }
     [HttpPost("Create")]
-    public async Task<ActionResult> CreateNewStudent([FromBody]StudentDTO studentDTO) 
+    public async Task<ActionResult> CreateNewStudent([FromBody] StudentDTO studentDTO)
     {
-        if (!TryValidateModel(studentDTO)) 
-        {
+        if (!TryValidateModel(studentDTO))
             throw new ValidationException();
-        }
-        try 
-        { 
+        try
+        {
             await _studentService.AddStudentAsync(studentDTO);
         }
         catch (Exception)
@@ -64,11 +79,13 @@ public class StudentController : ControllerBase
             throw new CustomException("Oops something went wrong");
         }
 
-        return Created();
+        return Ok();
     }
     [HttpPut("Update")]
     public async Task<ActionResult> UpdateStudent([FromBody] StudentDTO studentDTO)
     {
+        if (!TryValidateModel(studentDTO))
+            throw new ValidationException();
         try
         {
             await _studentService.UpgradeStudentAsync(studentDTO);
@@ -80,14 +97,14 @@ public class StudentController : ControllerBase
         }
         return Ok("Student updated Succesful");
     }
-    [HttpDelete("DeleteStudent/{id:int}")]
-    public async Task<ActionResult> DeleteStudent (int id) 
+    [HttpDelete("DeleteStudent")]
+    public async Task<ActionResult> DeleteStudent([FromQuery] int id)
     {
-        if (id <= 0) 
+        if (id <= 0)
         {
             throw new ArgumentException();
         }
-        var student =await _studentService.DeleteStudentAsync(id);
+        var student = await _studentService.DeleteStudentAsync(id);
         if (!student)
         {
             throw new KeyNotFoundException();
@@ -95,7 +112,7 @@ public class StudentController : ControllerBase
         return Ok($"the student with id:{id}deleted succesfuly");
     }
     [HttpPost("BookMenagment")]
-    public async Task<ActionResult<string>> BookMenagment(int studentId, int bookId, [Optional] DateTime? time) 
+    public async Task<ActionResult<string>> BookMenagment([FromQuery] int studentId, int bookId, [Optional] DateTime? time)
     {
         try
         {
@@ -105,21 +122,50 @@ public class StudentController : ControllerBase
                 return Ok("succesfuly");
             }
             var returnbook = await _studentService.ReturningBook(studentId, bookId, (DateTime)time);
-            return Ok("succesfuly returning book");   
+            return Ok("succesfuly returning book");
         }
-        catch (UserFriendlyException )
+        catch (UserFriendlyException)
         {
             throw new CustomException("Oops something went wrong");
         }
-        catch (Exception ) 
+        catch (Exception)
         {
-            throw new  Exception();
+            throw new Exception();
         }
     }
     [HttpPost("InsertStudentToDormitory")]
-    public async Task<ActionResult<string>> AddSrudentToDormotory(List<int> studentId,int? dormitoryId) 
+    public async Task<ActionResult<string>> AddSrudentToDormotory([FromBody] List<int> studentId, int? dormitoryId)
     {
-         var result = await _studentService.CallInsertStudentsDormitoryProcedureAsync(studentId, dormitoryId);
+        var result = await _studentService.CallInsertStudentsDormitoryProcedureAsync(studentId, dormitoryId);
         return Ok(result);
+    }
+    [HttpPatch("UpdatePartial/{studentId}")]
+    public async Task<ActionResult> UpdateStudent(int studentId, [FromBody] JsonPatchDocument<StudentDTO> patchdocument)
+    {
+        if (patchdocument == null)
+        {
+            return BadRequest("Invalid patch document");
+        }
+        try
+        {
+            var studentDTO = await _studentService.GetStudentByIdAsync(studentId);
+            if (studentDTO == null)
+            {
+                return NotFound($"Student with ID {studentId} not found");
+            }
+
+            patchdocument.ApplyTo(studentDTO, ModelState);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await _studentService.UpgradeStudentAsync(studentDTO);
+        }
+        catch (ValidationException)
+        {
+            throw new ValidationException();
+        }
+        return Ok("Student updated successfully");
     }
 }

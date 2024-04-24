@@ -86,18 +86,15 @@ public class CallStoredProcedureRepository : ICallStoredProcedureRepository
             {
                 var studentTable = new DataTable();
                 studentTable.Columns.Add("StudentIDs", typeof(int));
-
-                // Додавання студентів до таблиці
                 foreach (var id in studentId)
                 {
                     studentTable.Rows.Add(id);
                 }
-
                 var parameters = new DynamicParameters();
                 parameters.Add("@StudentIDs", studentTable.AsTableValuedParameter("studentidtabletype"));
                 parameters.Add("@DormitoryID", dormitoryId);
 
-                // Виконання збереженої процедури
+              
                 var result = await connection.QueryAsync<string>("SP_InsertStudentsDormitories", parameters, commandType: CommandType.StoredProcedure);
 
                 return result.FirstOrDefault();

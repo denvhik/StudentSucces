@@ -1,93 +1,40 @@
-﻿using Handling;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-
-namespace StudentWebApi.ErrorHanldeMiddleware.ErrorDetailsModel;
+using StudentWebApi.ErrorHanldeMiddleware.ErrorDetailsModel;
 
 public class GlobalExtensionHandler : IExceptionHandler
 {
     private readonly ILogger<GlobalExtensionHandler> _logger;
+    private readonly ErrorMessageLoader _errorMessageLoader;
 
-    public GlobalExtensionHandler(ILogger<GlobalExtensionHandler> logger)
+    public GlobalExtensionHandler(ILogger<GlobalExtensionHandler> logger, ErrorMessageLoader errorMessageLoader)
     {
         _logger = logger;
+        _errorMessageLoader = errorMessageLoader;
     }
 
-    public async  ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        ProblemDetails problemDetails;  
-        _logger.LogError($"extension occured when proccesing your requst:{exception.Message}");
-        switch (exception)
-        {
-            case BadHttpRequestException:
-                problemDetails = new ProblemDetails
-                {
-                    Status = StatusCodes.Status400BadRequest,
-                    Title = exception.GetType().Name
-                };
-                break;
-            case  KeyNotFoundException:
-                problemDetails = new ProblemDetails
-                {
-                    Status = StatusCodes.Status404NotFound,
-                    Title = "5001",
-                    Detail = exception.GetType().Name
-                };
-                break;
-            case ArgumentException:
-                problemDetails = new ProblemDetails
-                
-                {
-                    Status = StatusCodes.Status400BadRequest,
-                    Title = "Enter valid parameters"
-                };
-                break;
-            case ValidationException:
-                problemDetails = new ProblemDetails
+        var errorKey = exception.GetType().Name;
+        var customError = _errorMessageLoader.GetErrorMessage(errorKey);
 
-                {
-                    Status = StatusCodes.Status400BadRequest,
-                    Title = "Invalid Parametr"
-                };
-                break;
-            case UnauthorizedAccessException:
-                problemDetails = new ProblemDetails
-                {
-                   Status = (int)HttpStatusCode.Unauthorized,
-                   Title = "Unauthorized",
-                };
-                break;
-            case SystemExeptionHandle:
-                problemDetails = new ProblemDetails
-                {
-                    Status = StatusCodes.Status500InternalServerError,
-                    Title = "5001",
-                    Detail = exception.GetType().Name
-                };
-                break;
-                case CustomException:
-                problemDetails = new ProblemDetails
-                {
-                    Status = StatusCodes.Status500InternalServerError,
-                    Title = "5001",
-                    Detail = exception.Message
-                };
-                break;
-            default:
-                problemDetails = new ProblemDetails
-                {
-                    Status = StatusCodes.Status500InternalServerError,
-                    Title = exception.GetType().Name
-                };
-                break;
-        }
-        _logger.LogError($"extension occured when proccesing your requst:{exception.Message}");
+        var problemDetails = customError != null ? new ProblemDetails
+        {
+            Status = customError.Status,
+            Title = customError.Error,
+            Detail = string.Format(customError.Message, exception.Message)
+        } : new ProblemDetails
+        {
+            Status = StatusCodes.Status500InternalServerError,
+            Title = "Unhandled Exception",
+            Detail = exception.Message
+        };
+
+        _logger.LogError($"Exception occurred: {exception.Message}");
         httpContext.Response.StatusCode = (int)problemDetails.Status;
-        await httpContext
-            .Response
-            .WriteAsJsonAsync(problemDetails, cancellationToken);
+        httpContext.Response.ContentType = "application/json";
+        await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+
         return true;
     }
 }
