@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-
-namespace DAL.Models;
+﻿namespace DAL.Models;
 
 public partial class Student
 {
@@ -34,15 +30,12 @@ public partial class Student
 
     public Guid ModifiedBy { get; set; }
 
-    [Required(ErrorMessage = "field Gmail  is required")]
-    [EmailAddress]
-    public string Gmail { get; set; } 
+    public string Gmail { get; set; }
 
     public virtual ICollection<GroupEnrollment> GroupEnrollments { get; set; } = new List<GroupEnrollment>();
 
     public virtual ICollection<StudentBook> StudentBooks { get; set; } = new List<StudentBook>();
     public virtual StudentDebt StudentDebt { get; set; }
-
     public virtual ICollection<StudentGroup> StudentGroups { get; set; } = new List<StudentGroup>();
 
     public virtual ICollection<StudentHobby> StudentHobbies { get; set; } = new List<StudentHobby>();

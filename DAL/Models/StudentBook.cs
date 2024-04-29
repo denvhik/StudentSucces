@@ -5,8 +5,6 @@ public partial class StudentBook
 
     public int BookId { get; set; }
 
-    public decimal PriceCheck { get; set; }
-
     public DateTime? CheckStartDate { get; set; }
 
     public DateTime? CheckEndDate { get; set; }

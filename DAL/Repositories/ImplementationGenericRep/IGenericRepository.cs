@@ -1,4 +1,6 @@
-﻿namespace DAL.Repository.Implementation;
+﻿using System.Linq.Expressions;
+
+namespace DAL.Repository.Implementation;
 public interface IGenericRepository<T> where T : class
 {
     Task<T> GetByIdAsync(int? id);
@@ -8,4 +10,5 @@ public interface IGenericRepository<T> where T : class
     Task<T> DeleteByIdAsync(int id);
     Task SaveChangesAsync();
     Task<List<T>> GetPagingAsync(int skip , int take);
+    Task<List<T>>GetEntityById(Expression<Func<T, bool>> func, params string[] includes);
 }

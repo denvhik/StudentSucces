@@ -1,5 +1,6 @@
 ﻿namespace BLL.StudentDto;
 public class GroupDTO
 {
-    public int GroupName { get; set; }
+    public int GroupId { get; set; }
+    public string GroupName { get; set; }
 }

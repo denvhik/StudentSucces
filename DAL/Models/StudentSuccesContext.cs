@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace DAL.Models;
@@ -13,6 +11,7 @@ public partial class StudentSuccesContext : DbContext
     public StudentSuccesContext(DbContextOptions<StudentSuccesContext> options,IConfiguration configuration )
         : base(options)
     {
+
         _configuration = configuration;
     }
 
@@ -356,7 +355,6 @@ public partial class StudentSuccesContext : DbContext
             entity.Property(e => e.ModifiedDateTime)
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.PriceCheck).HasColumnType("decimal(3, 0)");
 
             entity.HasOne(d => d.Book).WithMany(p => p.StudentBooks)
                 .HasForeignKey(d => d.BookId)

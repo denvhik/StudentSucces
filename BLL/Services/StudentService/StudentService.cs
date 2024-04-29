@@ -2,11 +2,13 @@
 using BLL.StudentDto;
 using DAL.Models;
 using DAL.Repository.Implementation;
+using DAL.Repository.StudentSortingRepository;
 using DAL.StoredProcedureDTO;
 using DAL.StoredProcedures;
 using Handling;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using System.Linq.Dynamic.Core;
 
 namespace BLL.Services.StudentService;
 public class StudentService : IStudentService
@@ -14,21 +16,20 @@ public class StudentService : IStudentService
     private readonly ILogger<StudentService> _logger;
     private readonly IMapper _mapper;
     private readonly IGenericRepository<Student> _genericRepository;
-    private readonly IGenericRepository<StudentBook> _studentBookRepository;
     private readonly ICallStoredProcedureRepository _callStoredProcedureRepository;
-    private readonly UserFriendlyException _userFriendlyException;
+    private readonly IStudentSortingRepository _studentSortingRepository;
     private readonly IMemoryCache _memoryCache;
-    public StudentService(IGenericRepository<Student> genericRepository,IMapper mapper,
-        ICallStoredProcedureRepository callStoredProcedureRepository, 
+    public StudentService(IGenericRepository<Student> genericRepository, IMapper mapper,
+        ICallStoredProcedureRepository callStoredProcedureRepository,
         ILogger<StudentService> logger,
-        IGenericRepository<StudentBook> studentBookRepository, IMemoryCache memoryCache)
+        IGenericRepository<StudentBook> studentBookRepository, IMemoryCache memoryCache, IStudentSortingRepository studentSortingRepository)
     {
         _callStoredProcedureRepository = callStoredProcedureRepository;
         _mapper = mapper;
         _genericRepository = genericRepository;
         _logger = logger;
-        _studentBookRepository = studentBookRepository;
         _memoryCache = memoryCache;
+        _studentSortingRepository = studentSortingRepository;
     }
 
     public async Task AddStudentAsync(StudentDTO studentDto)
@@ -277,6 +278,21 @@ public class StudentService : IStudentService
             }
 
             return studentDTO;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            throw new UserFriendlyException(ex.Message, ex);
+        }
+    }
+
+    public async Task<StudentSortingDTO> GetSortingEntity(string term, string sort, int page, int limit)
+    {
+        try
+        {
+            var studentmodel = await _studentSortingRepository.GetSortingEntity(term, sort, page, limit);
+            var mapedmodel = _mapper.Map<StudentSortingDTO>(studentmodel);
+            return mapedmodel;
         }
         catch (Exception ex)
         {

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
 
 namespace BLL.StudentDto;
 public class StudentDTO
@@ -31,4 +30,5 @@ public class StudentDTO
     [EmailAddress(ErrorMessage = "Invalid email address.")]
     [RegularExpression(@"^[^@\s]+@[^@\s]+\.(com|net|org|gov|ua)$", ErrorMessage = "Invalid .")]
     public string Gmail { get; set; }
+
 }

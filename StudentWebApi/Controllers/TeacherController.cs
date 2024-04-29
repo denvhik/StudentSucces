@@ -2,7 +2,6 @@
 using BLL.StudentDto;
 using Handling;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace StudentWebApi.Controllers;
 
@@ -48,10 +47,8 @@ public class TeacherController : ControllerBase
     [HttpPost("Create")]
     public async Task<ActionResult> CreateNewTeacher([FromBody]TeacherDTO teacherDTO) 
     {
-        if (!TryValidateModel(teacherDTO))
-        {
-            throw new ValidationException();
-        }
+         if (ModelState.IsValid)
+            return BadRequest(ModelState);
         try
         {
             await _teacherService.AddTeacherAsync(teacherDTO);
@@ -66,6 +63,8 @@ public class TeacherController : ControllerBase
     [HttpPut]
     public async Task<ActionResult> UpdatedTeacher([FromBody] TeacherDTO teacherDTO) 
     {
+        if (ModelState.IsValid)
+            return BadRequest(ModelState);
         try
         {
             await _teacherService.UpgradeTeacherAsync(teacherDTO);

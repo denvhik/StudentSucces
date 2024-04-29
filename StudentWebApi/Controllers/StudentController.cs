@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using AutoMapper;
+using BLL.Services.StudentsDetailsService;
 using BLL.Services.StudentService;
 using BLL.StudentDto;
 using DAL.Models;
@@ -21,13 +22,15 @@ public class StudentController : ControllerBase
     private readonly ILogger<StudentController> _logger;
     private readonly SieveProcessor _sieveProcessor;
     private readonly IMapper _mapper;
+    private readonly IStudentsDetailsService _studentsDetailsService;
 
-    public StudentController(IStudentService studentService, ILogger<StudentController> logger, SieveProcessor sieveProcessor, IMapper mapper)
+    public StudentController(IStudentService studentService, ILogger<StudentController> logger, SieveProcessor sieveProcessor, IMapper mapper, IStudentsDetailsService studentsDetailsService)
     {
         _studentService = studentService;
         _logger = logger;
         _sieveProcessor = sieveProcessor;
         _mapper = mapper;
+        _studentsDetailsService = studentsDetailsService;
     }
 
     [HttpGet("GetStudent")]
@@ -44,6 +47,16 @@ public class StudentController : ControllerBase
             throw new KeyNotFoundException();
         }
         return Ok(queryableStudents);
+    }
+    [HttpGet("StudentSortingFiltering")]
+    public async Task<IActionResult> GetBooks(string term, string sort, int page = 1, int limit = 10)
+    {
+        var results = await _studentService.GetSortingEntity(term, sort, page, limit);
+
+        // Add pagination headers to the response
+        Response.Headers.Append("X-Total-Count", results.TotalCount.ToString());
+        Response.Headers.Append("X-Total-Pages", results.TotalPages.ToString());
+        return Ok(results);
     }
     [HttpGet("GetByParametrStudent")]
     public async Task<ActionResult<List<StudentDTO>>> GetByParametrStudent([FromQuery] int skip, int take)
@@ -65,6 +78,7 @@ public class StudentController : ControllerBase
         }
         return Ok(studentDTOs);
     }
+    
     [HttpPost("Create")]
     public async Task<ActionResult> CreateNewStudent([FromBody] StudentDTO studentDTO)
     {
@@ -78,12 +92,20 @@ public class StudentController : ControllerBase
         {
             throw new CustomException("Oops something went wrong");
         }
-
         return Ok();
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="studentDTO"></param>
+    /// <returns></returns>
+    /// <exception cref="ValidationException"></exception>
+   
     [HttpPut("Update")]
     public async Task<ActionResult> UpdateStudent([FromBody] StudentDTO studentDTO)
     {
+
         if (!TryValidateModel(studentDTO))
             throw new ValidationException();
         try
@@ -144,6 +166,7 @@ public class StudentController : ControllerBase
     {
         if (patchdocument == null)
         {
+            
             return BadRequest("Invalid patch document");
         }
         try
@@ -167,5 +190,18 @@ public class StudentController : ControllerBase
             throw new ValidationException();
         }
         return Ok("Student updated successfully");
+    }
+    [HttpGet("GetStudentInfo/{id:int}")]
+    public async Task<StudentsJoinedEntetiesDTO> GetStudentInfo(int id,[FromQuery] params string[] includes) 
+    {
+        try 
+        {
+            var result = await _studentsDetailsService.GetStudentEntetyByIdAsync(id,includes);
+            return result;
+        }
+        catch (Exception)
+        {
+            throw new KeyNotFoundException();
+        }
     }
 }

@@ -6,10 +6,7 @@ using Sieve.Services;
 using StudentWebApi.Autommaper;
 using StudentWebApi.ErrorHanldeMiddleware.ErrorDetailsModel;
 
-
-   
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 builder.Services.AddDalService();   
 builder.Services.AddBllService();
@@ -31,8 +28,8 @@ new UrlSegmentApiVersionReader(),
 new HeaderApiVersionReader());
 }).AddApiExplorer(options =>
 {
-options.GroupNameFormat = "'v'V";
-options.SubstituteApiVersionInUrl = true;
+    options.GroupNameFormat = "'v'V";
+    options.SubstituteApiVersionInUrl = true;
 });
 Log.Logger = new LoggerConfiguration()
 .ReadFrom.Configuration(builder.Configuration).CreateLogger();
@@ -49,8 +46,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-app.UseSwagger();
-app.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 //app.UseMiddleware<ExceptionMiddlewareExtension>();
 //app.UseMiddleware<CustomErrorHandlingMiddleware>();

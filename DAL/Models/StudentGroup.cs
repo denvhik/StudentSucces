@@ -19,5 +19,5 @@ public partial class StudentGroup
 
     public virtual Group Group { get; set; }
 
-    public virtual Student Student { get; set; } 
+    public virtual Student Student { get; set; }
 }

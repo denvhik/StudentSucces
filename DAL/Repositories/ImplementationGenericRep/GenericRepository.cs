@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using DAL.Models;
-using Microsoft.Extensions.Configuration;
 using Handling;
+using System.Linq.Expressions;
 
 namespace DAL.Repository.Implementation;
 public class GenericRepository<T> : IGenericRepository<T> where T : class
@@ -9,7 +9,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     private readonly StudentSuccesContext _studentSuccesContext;
     private readonly DbSet<T> _dbSet;
 
-    public GenericRepository(StudentSuccesContext studentSuccesContext, IConfiguration confihuration)
+    public GenericRepository(StudentSuccesContext studentSuccesContext)
     {
         _studentSuccesContext = studentSuccesContext;
         _dbSet = _studentSuccesContext.Set<T>();
@@ -99,6 +99,28 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         catch (Exception ex) 
         {
             throw SystemExeptionHandle.FromSystemException(ex);
+        }
+    }
+    public async Task <List<T>> GetEntityById(Expression<Func<T, bool>> func, params string[] includes)
+    {
+        try
+        {
+
+            IQueryable<T> query = _studentSuccesContext.Set<T>().AsQueryable();
+
+            // Динамічно додаємо включення на основі параметрів, переданих у запит
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            query = query.Where(func).AsNoTracking();
+
+            return await query.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
         }
     }
 }

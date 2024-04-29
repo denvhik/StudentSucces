@@ -1,6 +1,6 @@
 ﻿using DAL.Models;
 using DAL.Repository.BookDetails;
-using DAL.Repository.Implementation;
+using DAL.Repository.StudentSortingRepository;
 using DAL.StoredProcedures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,8 +17,9 @@ public static class DalDependencyExtension
         service.AddSingleton<IConfiguration>(config);
         service.AddScoped<ICallStoredProcedureRepository, CallStoredProcedureRepository>();
         service.AddScoped<IStudentBookDetailRepositorys, StudentBookDetailsRepository>();
+        service.AddScoped<IStudentSortingRepository, StudentSortingRepository>();
         service.AddDbContext<StudentSuccesContext>(options =>
-        options.UseSqlServer(config["ConnectionStrings:StudentConnections"]));
+      options.UseSqlServer(config["ConnectionStrings:StudentConnections"]));
         return service;
     }
 }

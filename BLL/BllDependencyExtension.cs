@@ -2,11 +2,13 @@
 using BLL.Services.HobbieService;
 using BLL.Services.StudentBookService;
 using BLL.Services.StudentDormitoryService;
+using BLL.Services.StudentsDetailsService;
 using BLL.Services.StudentService;
 using BLL.Services.SubjectService;
 using BLL.Services.TeacherService;
 using DAL;
 using DAL.Repository.Implementation;
+using DAL.Repository.StudentSortingRepository;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -28,8 +30,10 @@ public static class BllDependencyExtension
         services.AddScoped<IStudentBookDetails, StudentBookDetail>();
         services.AddScoped<ITeacherService, TeacherService>();
         services.AddScoped<ISubjectService, SubjectService>();
+        services.AddScoped<IStudentsDetailsService, StudentsDetailsService>();
         services.AddScoped<IStudentDormitoryService, StudentDormitoryService>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        services.AddScoped <IStudentSortingRepository, StudentSortingRepository>();
         Log.Logger = logConfiguration.CreateLogger();
         services.AddAutoMapper(typeof(StudentApiProfile));
         services.AddLogging(loggingbuilder => loggingbuilder.AddSerilog());

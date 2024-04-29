@@ -17,7 +17,7 @@ public partial class StudentHobby
 
     public Guid? ModifiedBy { get; set; }
 
-    public virtual Hobbie Hobby { get; set; } 
+    public virtual Hobbie Hobby { get; set; }
 
-    public virtual Student Student { get; set; } 
+    public virtual Student Student { get; set; }
 }

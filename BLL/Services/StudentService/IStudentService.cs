@@ -1,4 +1,5 @@
 ﻿using BLL.StudentDto;
+using DAL.Repository.StudentSortingRepository;
 using DAL.StoredProcedureDTO;
 namespace BLL.Services.StudentService;
 public interface IStudentService
@@ -17,4 +18,5 @@ public interface IStudentService
     Task  <IEnumerable<StudentRatingResult>>CallSortStudentRatingAsync();
     Task<string> ReturningBook(int studentId, int bookId, DateTime dateTime);
     Task<string> TakeBook(int studentId, int BookId);
+    public Task<StudentSortingDTO> GetSortingEntity(string term, string sort, int page, int limit);
 }

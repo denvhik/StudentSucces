@@ -6,16 +6,33 @@ using System.Data;
 using Microsoft.Extensions.Configuration;
 using Handling;
 namespace DAL.StoredProcedures;
-
+/// <summary>
+/// 
+/// </summary>
 public class CallStoredProcedureRepository : ICallStoredProcedureRepository
 {
+    /// <summary>
+    /// 
+    /// </summary>
     private readonly IConfiguration _configuration;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="configuration"></param>
+    /// 
     public CallStoredProcedureRepository(IConfiguration configuration)
     {
         _configuration = configuration;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="studentID"></param>
+    /// <param name="month"></param>
+    /// <param name="year"></param>
+    /// <returns></returns>
     public async Task<List<ScholarshipDTO>> CallCalculateAcholarshipForStudentAsync(int studentID, int month, int year)
     {
         try

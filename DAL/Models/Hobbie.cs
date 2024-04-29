@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿
 namespace DAL.Models;
-
 public partial class Hobbie
 {
     public int HobbyId { get; set; }
