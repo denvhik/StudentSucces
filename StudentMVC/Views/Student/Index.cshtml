@@ -1,0 +1,94 @@
+﻿@model IEnumerable<BLL.StudentDto.StudentDTO>
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@(
+Html.DevExtreme().DataGrid<BLL.StudentDto.StudentDTO>()
+                .ID("StudentGrid")
+                .DataSource(ds => ds.Mvc()
+                    .Controller("Student")
+                    .LoadAction("Get")
+                    .InsertAction("Post")
+                    .UpdateAction("Put")
+                    .DeleteAction("Delete")
+                    .Key("Id")
+                    .OnBeforeSend("grid_dataSource_beforeSend")
+                )
+    .ShowColumnLines(true)
+    .ShowRowLines(true)
+    .RowAlternationEnabled(true)
+    .RemoteOperations(true)
+    .Columns(columns =>
+    {
+        columns.AddFor(m => m.FirstName);
+
+        columns.AddFor(m => m.LastName);
+
+        columns.AddFor(m => m.MiddleName);
+
+        columns.AddFor(m => m.TicketNumber);
+
+        columns.AddFor(m => m.BirthYear);
+
+        columns.AddFor(m => m.BirthPlace);
+
+        columns.AddFor(m => m.Address);
+
+        columns.AddFor(m => m.Gender).Lookup(lookup => lookup
+.DataSource(ds => ds.WebApi().Controller("Student").LoadAction("GenderLookup").Key("Value")).ValueExpr("Value").DisplayExpr("Text")
+            );
+        columns.AddFor(m => m.MaritalStatus).Lookup(lookup => lookup
+.DataSource(ds => ds.WebApi().Controller("Student").LoadAction("Maritalstatus").Key("Value")).ValueExpr("Value").DisplayExpr("Text")
+            ); ;
+        columns.AddFor(m => m.Gmail);
+    }
+)
+    .Editing(e => e
+        .AllowAdding(true)
+        .AllowUpdating(true)
+        .AllowDeleting(true)
+    )
+    .Paging(paging => paging.PageSize(5))
+
+    .Pager(async pager =>
+    {
+        pager.Visible(true);
+        pager.DisplayMode(GridPagerDisplayMode.Full);
+        pager.ShowPageSizeSelector(true);
+        pager.AllowedPageSizes(new JS("[5,7,'all']"));
+        pager.ShowInfo(true);
+        pager.ShowNavigationButtons(true);
+        
+    })
+    .FilterRow(filter => filter.Visible(true))
+    .SearchPanel(searchPanel => searchPanel
+        .Visible(true)
+        .Width(240)
+        .Placeholder("Search...")
+    )
+    .OnRowInserted("readresponse")
+    .OnRowUpdated("readresponse")
+    .Toolbar(toolbar =>
+{
+    toolbar.Items(items =>
+    {
+
+        items.Add().Name("addRowButton");
+        items.Add().Name("searchPanel");
+        items.Add().Widget(w =>
+            w.Button()
+                .Icon("refresh")
+                .OnClick("reloadGrid")
+
+        );
+        items.Add().Widget(w => w.Button()
+        .Text("Open Student Library ")
+        .OnClick("openStudentLibraryPopup"));
+
+    });
+
+})
+
+)
+
+@Html.DevExtreme().Toast().ID("toast").DisplayTime(600)
+ 
+@await Html.PartialAsync("PopupPartial")
