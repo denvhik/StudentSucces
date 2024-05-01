@@ -1,4 +1,5 @@
 ﻿using DAL.Models;
+using DAL.Repositories.AuthRepository;
 using DAL.Repository.BookDetails;
 using DAL.Repository.StudentSortingRepository;
 using DAL.StoredProcedures;
@@ -14,10 +15,11 @@ public static class DalDependencyExtension
           .SetBasePath(Directory.GetCurrentDirectory())
           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
           .Build();
-        service.AddSingleton<IConfiguration>(config);
+        service.AddSingleton(config);
         service.AddScoped<ICallStoredProcedureRepository, CallStoredProcedureRepository>();
         service.AddScoped<IStudentBookDetailRepositorys, StudentBookDetailsRepository>();
         service.AddScoped<IStudentSortingRepository, StudentSortingRepository>();
+        service.AddScoped<IUserRepository, UserRepository>();
         service.AddDbContext<StudentSuccesContext>(options =>
       options.UseSqlServer(config["ConnectionStrings:StudentConnections"]));
         return service;

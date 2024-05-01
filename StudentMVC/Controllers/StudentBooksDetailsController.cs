@@ -3,7 +3,6 @@ using DevExtreme.AspNet.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
 using BLL.Services.StudentBookService;
-using static DevExpress.Xpo.Helpers.AssociatedCollectionCriteriaHelper;
 
 namespace StudentMVC.Controllers;
 
@@ -48,7 +47,7 @@ public class StudentBooksDetailsController : Controller
     //        if(!TryValidateModel(model))
     //            return BadRequest(GetFullErrorMessage(ModelState));
 
-    //        var result = _context.Books.Add(model);
+    //        var result = _context.Books.AddAsync(model);
     //        await _context.SaveChangesAsync();
 
     //        return Json(new { result.Entity.BookId });
@@ -142,7 +141,7 @@ public class StudentBooksDetailsController : Controller
 
     //        foreach(var entry in modelState) {
     //            foreach(var error in entry.Value.Errors)
-    //                messages.Add(error.ErrorMessage);
+    //                messages.AddAsync(error.ErrorMessage);
     //        }
 
     //        return String.Join(" ", messages);

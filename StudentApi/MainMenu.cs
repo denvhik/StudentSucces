@@ -23,7 +23,7 @@ public class MainMenu
         while (true)
         {
             Console.WriteLine("----------------------------------------------");
-            Console.WriteLine("1. Add Student");
+            Console.WriteLine("1. AddAsync Student");
             Console.WriteLine("2. Delete Student");
             Console.WriteLine("3. Get Students");
             Console.WriteLine("4. Upgrade Student");
@@ -60,9 +60,9 @@ public class MainMenu
                 case "6":
                     await GetTopScores();
                     break;
-                case "7":
-                    await _studentService.CallInsertStudentsDormitoryProcedureAsync();
-                    break;
+                //case "7":
+                //    await _studentService.CallInsertStudentsDormitoryProcedureAsync();
+                //    break;
                 case "8":
                     await ShowOverdueBookReport();
                     break;

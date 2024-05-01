@@ -1,18 +1,30 @@
 using Asp.Versioning;
 using BLL;
 using DAL;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
 using Serilog;
 using Sieve.Services;
 using StudentWebApi.Autommaper;
 using StudentWebApi.ErrorHanldeMiddleware.ErrorDetailsModel;
 
 var builder = WebApplication.CreateBuilder(args);
-// Add services to the container.
+// AddAsync services to the container.
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+
+});
 builder.Services.AddDalService();   
 builder.Services.AddBllService();
 builder.Services.AddMemoryCache();
 builder.Services.AddLogging();
 builder.Services.AddExceptionHandler<GlobalExtensionHandler>();
+
 builder.Services.AddSingleton<ErrorMessageLoader>();
 builder.Services.AddSingleton<SieveProcessor>();
 builder.Services.AddAutoMapper(typeof(MapperProvider));
@@ -36,11 +48,29 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-//builder.Services.Configure<ApiBehaviorOptions>(options =>
-//{
-//    options.SuppressModelStateInvalidFilter = true;
-//});
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme."
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+            {
+                new OpenApiSecurityScheme {
+                    Reference = new OpenApiReference {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] {}
+            }
+        });
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -53,6 +83,7 @@ if (app.Environment.IsDevelopment())
 //app.UseMiddleware<CustomErrorHandlingMiddleware>();
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

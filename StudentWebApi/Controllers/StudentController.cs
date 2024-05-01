@@ -3,7 +3,6 @@ using AutoMapper;
 using BLL.Services.StudentsDetailsService;
 using BLL.Services.StudentService;
 using BLL.StudentDto;
-using DAL.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
@@ -53,7 +52,7 @@ public class StudentController : ControllerBase
     {
         var results = await _studentService.GetSortingEntity(term, sort, page, limit);
 
-        // Add pagination headers to the response
+        // AddAsync pagination headers to the response
         Response.Headers.Append("X-Total-Count", results.TotalCount.ToString());
         Response.Headers.Append("X-Total-Pages", results.TotalPages.ToString());
         return Ok(results);

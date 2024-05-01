@@ -42,5 +42,6 @@ public class StudentApiProfile:Profile
         CreateMap<PagedEntityResults, StudentSortingDTO>()
            .ForMember(dest => dest.TotalCount, opt => opt.MapFrom(src => src.TotalCount))
            .ForMember(dest => dest.TotalPages, opt => opt.MapFrom(src => src.TotalPages));
+        CreateMap<UserDTO,UserEntity>().ReverseMap();
     }
 }

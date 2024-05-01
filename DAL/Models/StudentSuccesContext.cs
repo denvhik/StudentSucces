@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace DAL.Models;
@@ -18,7 +19,7 @@ public partial class StudentSuccesContext : DbContext
     public virtual DbSet<BookCopy> BookCopies { get; set; }
     public virtual DbSet<StudentDebt> StudentDebts { get; set; }
     public virtual DbSet<Book> Books { get; set; }
-
+    public virtual DbSet<UserEntity> Users { get; set; }
     public virtual DbSet<Dormitory> Dormitories { get; set; }
 
     public virtual DbSet<Group> Groups { get; set; }
@@ -89,6 +90,23 @@ public partial class StudentSuccesContext : DbContext
             entity.Property(e => e.Title)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+        });
+        modelBuilder.Entity<UserEntity>(entity =>
+        {
+            entity.ToTable("Users");
+
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.UserName)
+                .IsRequired()
+                .HasMaxLength(256);
+
+            entity.Property(e => e.PasswordHash)
+                .IsRequired()
+                .HasMaxLength(256);
+
+            entity.Property(e => e.Email)
+                .HasMaxLength(256);
         });
         modelBuilder.Entity<BookCopy>(entity =>
         {
