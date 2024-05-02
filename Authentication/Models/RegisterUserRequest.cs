@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace AuthenticationWebApi.Models;
+﻿namespace AuthenticationWebApi.Models;
 public class RegisterUserRequest
 {
-
-    [Required]public string UserName { get; set; }
-    [Required]public string Password { get; set; }
-    [Required]public string Email { get; set; }
+      public string UserName { get; set; }
+      public string Password { get; set; }
+      public string Email { get; set; }
 }
