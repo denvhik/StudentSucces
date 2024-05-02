@@ -1,5 +1,7 @@
 ﻿using AuthenticationWebApi.Models;
-using BLL.UserServices;
+using AutoMapper;
+using BllAuth.Models;
+using BllAuth.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthenticationWebApi.Controllers
@@ -8,11 +10,13 @@ namespace AuthenticationWebApi.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly IUserService _userService;
-
-        public AuthenticationController(IUserService userService)
+        private readonly IAuthService _authService;
+        private readonly IMapper _mapper;
+        public AuthenticationController(IAuthService authService, IMapper mapper)
         {
-            _userService = userService;
+
+            _authService = authService;
+            _mapper = mapper;
         }
 
         // POST /user/register
@@ -21,20 +25,27 @@ namespace AuthenticationWebApi.Controllers
         {
             try
             {
-                await _userService.Register(request.UserName, request.Email, request.Password);
-                return Ok();
-            } catch (Exception ex) 
+                var mappedRequest = _mapper.Map<RegisterUser>(request);
+                return Ok(await _authService.RegisterUser(mappedRequest));
+            }
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
 
-        // POST /user/login
-        [HttpPost("login")]
+     
+       [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
         {
-            var token = await _userService.Login(request.Email, request.Password);
-            return Ok(token);
+            var mappedRequest = _mapper.Map<LoginUser>(request);
+            if (await _authService.Login(mappedRequest))
+            {
+                var token = _authService.GenerateToken(mappedRequest);
+                return Ok(token);
+            }
+                
+            return BadRequest();
         }
     }
 }

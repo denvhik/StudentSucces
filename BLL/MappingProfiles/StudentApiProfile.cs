@@ -3,7 +3,6 @@ using BLL.StudentDto;
 using DAL.BookDetailsDTO;
 using DAL.Models;
 using DAL.Repository.StudentSortingRepository;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace BLL.MappingProfiles;
 public class StudentApiProfile:Profile
 {

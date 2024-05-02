@@ -49,7 +49,6 @@ public static class BllDependencyExtension
         Log.Logger = logConfiguration.CreateLogger();
         services.AddAutoMapper(typeof(StudentApiProfile));
         services.AddLogging(loggingbuilder => loggingbuilder.AddSerilog());
-        services.AddDalService();
         return services;
     }
 }
