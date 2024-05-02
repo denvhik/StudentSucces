@@ -1,0 +1,48 @@
+﻿@(
+Html.DevExtreme().Popup()
+         .ID("studentLibrary")
+        .Width(500)
+        .Height(500)
+        .ShowCloseButton(true)
+        .ShowTitle(true)
+        .Title("Book")
+        .ContentTemplate(@<text>
+    @using  (Html.BeginForm())
+    {
+        <div>
+        </div>
+        <div class="dx-fieldset">
+            <div class="dx-field">
+                <label class="dx-field-item-label" for="studentId">Student ID:</label>
+                <div class="dx-field-item-value">
+                @Html.TextBox("studentId", null, new { @class = "dx-texteditor-input", type = "text", id = "studentId",required = "required"  })
+                </div>
+            </div>
+
+            <div class="dx-field">
+                <label class="dx-field-item-label" for="bookId">Book ID:</label>
+                <div class="dx-field-item-value">
+                @Html.TextBox("bookId", null, new { @class = "dx-texteditor-input", type = "text", id = "bookId", required = "required" })
+                </div>
+            </div>
+
+            <div class="dx-field">
+                <label class="dx-field-item-label" for="dateTime">Date Time:</label>
+                <div class="dx-field-item-value">
+                    <input class="dx-texteditor-input" type="datetime-local" id="dateTime" name="dateTime" >
+                    <small class="form-text text-muted">Set end date to return the book</small>
+                </div>
+            </div>
+
+            <div class="dx-field">
+                <div class="dx-field-item-label"></div>
+                <div class="dx-field-item-value">
+                    <button class="button-send" type="button" onclick="sendData()">Send</button>
+                    <button class="button-cancel" type="button" onclick="ClosePopUp()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    }
+</text>
+   )
+)

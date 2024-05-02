@@ -61,16 +61,18 @@ JOIN
 END;
 
 ALTER TABLE [dbo].[Hobbie]
-ADD CONSTRAINT [Hobbie_CreatedBy] DEFAULT (CAST(SUBSTRING(CAST(SUSER_SID() AS varbinary(85)), 1, 16) AS uniqueidentifier)) FOR [CreatedBy],
+
+ADD CONSTRAINT [Hobbie_CreatedBy] DEFAULT CONVERT(UNIQUEIDENTIFIER,CONVERT(BINARY(16),SUSER_SID())) FOR [CreatedBy],
 	CONSTRAINT [Hobbie_CreatedDateTime] DEFAULT GETDATE() FOR [CreatedDateTime],
-	CONSTRAINT [Hobbie_ModifiedBy]  DEFAULT (CAST(SUBSTRING(CAST(SUSER_SID() AS varbinary(85)), 1, 16) AS uniqueidentifier)) FOR [ModifiedBy],
+	CONSTRAINT [Hobbie_ModifiedBy] DEFAULT CONVERT(UNIQUEIDENTIFIER,CONVERT(BINARY(16),SUSER_SID())) FOR [ModifiedBy],
 	CONSTRAINT [Hobbie_ModifiedDateTime] DEFAULT GETDATE() FOR [ModifiedDateTime];
 
 
 ALTER TABLE [dbo].[Subject]
-ADD CONSTRAINT [Subject_CreatedBy] DEFAULT (CAST(SUBSTRING(CAST(SUSER_SID() AS varbinary(85)), 1, 16) AS uniqueidentifier)) FOR [CreatedBy],
+
+ADD CONSTRAINT [Subject_CreatedBy] DEFAULT CONVERT(UNIQUEIDENTIFIER,CONVERT(BINARY(16),SUSER_SID())) FOR [CreatedBy],
 	CONSTRAINT [Subject_CreatedDateTime] DEFAULT GETDATE() FOR [CreatedDateTime],
-	CONSTRAINT [Subject_ModifiedBy DEFALT] DEFAULT (CAST(SUBSTRING(CAST(SUSER_SID() AS varbinary(85)), 1, 16) AS uniqueidentifier)) FOR [ModifiedBy],
+	CONSTRAINT [Subject_ModifiedBy] DEFAULT CONVERT(UNIQUEIDENTIFIER,CONVERT(BINARY(16),SUSER_SID())) FOR [ModifiedBy],
 	CONSTRAINT [Subject_ModifiedDateTime] DEFAULT GETDATE() FOR [ModifiedDateTime];
 
 IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'TeacherLogin')
