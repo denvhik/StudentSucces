@@ -48,6 +48,7 @@ public class GenerateTokenService(UserManager<User> userManager,
 
    public async Task<string> GenerateRefreshToken(LoginUser loginUser)
    {
+
         var user = await userManager.FindByEmailAsync(loginUser.Email);
         if (user == null)
             throw new ArgumentException("User Not Found");
@@ -73,6 +74,7 @@ public class GenerateTokenService(UserManager<User> userManager,
 
     public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
     {
+
         var tokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = false, 
@@ -89,4 +91,5 @@ public class GenerateTokenService(UserManager<User> userManager,
             throw new SecurityTokenException("Invalid token");
         return principal;
     }
+
 }

@@ -1,4 +1,5 @@
 ﻿using BllAuth.Models;
+using Dal.Auth.Model;
 using System.Security.Claims;
 
 namespace BllAuth.Services.GenerateTokenService;

@@ -30,7 +30,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DalAuth", "Dal.Auth\DalAuth
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BllAuth", "BllAuth\BllAuth.csproj", "{9ECC84E8-2DEC-4C95-81AD-1778B5F9DDFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentApiControllerTest", "StudentApiControllerTest\StudentApiControllerTest.csproj", "{1F10EBBC-5EB8-4446-A679-B48CE638BC67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StudentApiControllerTest", "StudentApiControllerTest\StudentApiControllerTest.csproj", "{1F10EBBC-5EB8-4446-A679-B48CE638BC67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthApiControllerTest", "AuthApiControllerTest\AuthApiControllerTest.csproj", "{33F859EE-FA86-44E1-AEB8-EABCEA720B17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,6 +88,10 @@ Global
 		{1F10EBBC-5EB8-4446-A679-B48CE638BC67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F10EBBC-5EB8-4446-A679-B48CE638BC67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F10EBBC-5EB8-4446-A679-B48CE638BC67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33F859EE-FA86-44E1-AEB8-EABCEA720B17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33F859EE-FA86-44E1-AEB8-EABCEA720B17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33F859EE-FA86-44E1-AEB8-EABCEA720B17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33F859EE-FA86-44E1-AEB8-EABCEA720B17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

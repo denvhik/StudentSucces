@@ -1,4 +1,5 @@
-﻿using BllAuth.Models;
+﻿using Azure.Core;
+using BllAuth.Models;
 using Dal.Auth.Model;
 using DalAuth.Model;
 using Microsoft.AspNetCore.Identity;
@@ -80,6 +81,9 @@ public class AuthService(UserManager<User> userManager,
 
     public async Task<bool> RegisterAdmin(RegisterUser user)
     {
+        var emailexist = await userManager.FindByEmailAsync(user.Email);
+        if (emailexist != null)
+            throw new Exception ("Email already exist");
         var identityUser = new User
         {
             UserName = user.UserName,

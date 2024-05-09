@@ -82,7 +82,7 @@ public class StudentControlerTest
         Assert.IsInstanceOf<BadRequestResult>(result);
     }
 
-        [Test]
+    [Test]
     public async Task GetStudent_ReturnsOkResult_WithStudentApiDtos()
     {
         // Arrange

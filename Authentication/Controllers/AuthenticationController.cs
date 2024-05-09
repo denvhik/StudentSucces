@@ -2,7 +2,9 @@
 using AutoMapper;
 using BllAuth.Models;
 using BllAuth.Services.AuthService;
+using BllAuth.Services.EmailService;
 using BllAuth.Services.GenerateTokenService;
+using BllAuth.Services.LogOutService;
 using Dal.Auth.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,18 +20,20 @@ public class AuthenticationController : ControllerBase
     private readonly IAuthService _authService;
     private readonly IGenerateTokenService _generateTokenService;
     private readonly IMapper _mapper;
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
+    private readonly IEmailService _emailService;
+    private readonly ILogoutService _logOut;
     public AuthenticationController(IAuthService authService,
-        IMapper mapper, UserManager<User> userManager,
-        IGenerateTokenService generateTokenService, SignInManager<User> signInManager)
+        IMapper mapper,
+        IGenerateTokenService generateTokenService,
+        IEmailService emailService,
+        ILogoutService logOut)
     {
 
         _authService = authService;
         _mapper = mapper;
-        _userManager = userManager;
         _generateTokenService = generateTokenService;
-        _signInManager = signInManager;
+        _emailService = emailService;
+        _logOut = logOut;
     }
 
     /// <summary>
@@ -88,11 +92,6 @@ public class AuthenticationController : ControllerBase
     {
         try
         {
-            var emailexist = await  _userManager.FindByEmailAsync(request.Email);
-
-            if (emailexist != null)
-                return Conflict("Email already exist");
-
             var mappedRequest = _mapper.Map<RegisterUser>(request);
             return Ok(await _authService.RegisterAdmin(mappedRequest));
         }
@@ -119,7 +118,7 @@ public class AuthenticationController : ControllerBase
         {
             var principal = _generateTokenService.GetPrincipalFromExpiredToken(request.AccessToken);
             var email = principal.FindFirst(ClaimTypes.Email)?.Value;
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _emailService.GetUserByEmail(email);
 
             if (user == null || user.RefreshToken != request.RefreshToken || user.ExpirationTimetoken <= DateTime.UtcNow)
             {
@@ -170,7 +169,7 @@ public class AuthenticationController : ControllerBase
     {
         try
         {
-            var emailexist = await _userManager.FindByEmailAsync(request.Email);
+            var emailexist = await _emailService.GetUserByEmail(request.Email);
 
             if (emailexist != null)
                 return Conflict("Email already exist");
@@ -190,7 +189,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        await _signInManager.SignOutAsync();
+        await _logOut.Logout();
         return Ok(new { message = "Logged out successfully" });
     }
 }

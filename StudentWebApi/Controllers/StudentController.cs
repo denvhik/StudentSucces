@@ -32,7 +32,6 @@ public class StudentController : ControllerBase
     /// Retrieves a filtered and sorted list of students based on the provided Sieve model.
     /// this is separate library installed using packege nuggets menager that allows filtering 
     /// </summary>
-    /// <param name="model">Sieve model for filtering and sorting.</param>
     /// <returns>A filtered and sorted list of students.</returns>
     /// <exception cref="KeyNotFoundException">Thrown when no students are found matching the filter criteria.</exception>
     [HttpGet("GetStudent")]
@@ -47,6 +46,7 @@ public class StudentController : ControllerBase
         {
             throw new KeyNotFoundException();
         }
+        
         return Ok(studentresult);
     }
 

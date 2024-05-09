@@ -96,7 +96,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseResponseCaching();
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAuthentication();
