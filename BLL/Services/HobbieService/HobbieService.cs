@@ -17,7 +17,7 @@ public class HobbieService : IHobbieService
         _genericRepository = genericRepository;
         _logger = logger;
     }
-    public async Task AddHobbieAsync(HobbieDTO hobbieDTO)
+    public async Task AddHobbieAsync(HobbyDTO hobbieDTO)
     {
         try
         {
@@ -58,14 +58,14 @@ public class HobbieService : IHobbieService
         }
     }
 
-    public async Task<IEnumerable<HobbieDTO>> GetHobbieAsync()
+    public async Task<List<HobbyDTO>> GetHobbieAsync()
     {
         try
         {
             _logger.LogInformation("Початок методу GetStudentAsync");
             var Hobbies = await _genericRepository.GetAllAsync();
             _logger.LogInformation($"Student: {Hobbies}");
-            var HobieDTO = _mapper.Map<IEnumerable<HobbieDTO>>(Hobbies);
+            var HobieDTO = _mapper.Map<List<HobbyDTO>>(Hobbies);
             _logger.LogInformation($"Student: {HobieDTO}");
             return HobieDTO;
         }
@@ -79,15 +79,14 @@ public class HobbieService : IHobbieService
         }
     }
 
-    public  async Task UpgradeHobbieAsync(int id, HobbieDTO HobbieDTO)
+    public  async Task UpgradeHobbieAsync(HobbyDTO HobbieDTO)
     {
         try
         {
             _logger.LogInformation("start method UpgradeStudentAsync");
-            var HobbieById = await _genericRepository.GetByIdAsync(id);
+            var HobbieById = await _genericRepository.GetByIdAsync((int?)HobbieDTO.HobbyId);
             _logger.LogInformation($"{HobbieById}");
             if (HobbieById == null) return;
-            HobbieDTO.Id = HobbieById.HobbyId;
             HobbieById.HobbyName = HobbieDTO.HobbyName;
             await _genericRepository.UpdateAsync(HobbieById);
             _logger.LogInformation($"{HobbieById}");

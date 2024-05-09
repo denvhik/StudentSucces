@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace StudentWebApi.Controllers
+namespace StudentWebApi.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class BookController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class BookController : ControllerBase
-    {
-    }
 }

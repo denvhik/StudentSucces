@@ -2,8 +2,8 @@
 namespace BLL.Services.HobbieService;
 public interface IHobbieService
 {
-    Task<IEnumerable<HobbieDTO>> GetHobbieAsync();
-    Task AddHobbieAsync(HobbieDTO hobbie);
-    Task UpgradeHobbieAsync(int id, HobbieDTO hobbieDTO);
+    Task<List<HobbyDTO>> GetHobbieAsync();
+    Task AddHobbieAsync(HobbyDTO hobbie);
+    Task UpgradeHobbieAsync( HobbyDTO hobbieDTO);
     Task<bool> DeleteHobbieAsync(int id);
 }

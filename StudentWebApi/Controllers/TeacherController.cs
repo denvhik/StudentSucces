@@ -1,6 +1,7 @@
 ﻿using BLL.Services.TeacherService;
 using BLL.StudentDto;
 using Handling;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace StudentWebApi.Controllers;
@@ -17,9 +18,10 @@ public class TeacherController : ControllerBase
     }
 
     [HttpGet("GetTeachers")]
-    public async Task<ActionResult<List<TeacherDTO>>> GetTeacherList() 
+    [Authorize(Roles = "Admin,Member,Menager")]
+    public async Task<ActionResult<List<TeachersDTO>>> GetTeacherList() 
     {
-        List<TeacherDTO> teacherDTOs = new();
+        List<TeachersDTO> teacherDTOs = new();
         try 
         {
             teacherDTOs = await _teacherService.GetTeacherAsync();
@@ -31,6 +33,7 @@ public class TeacherController : ControllerBase
         return teacherDTOs;
     }
     [HttpDelete("DeleteTeacher/{id:int}")]
+    [Authorize(Roles = "Admin,Menager")]
     public async Task<ActionResult<bool>> DeleteTeacher( int id ) 
     {
         if (id<=0)
@@ -45,7 +48,8 @@ public class TeacherController : ControllerBase
         return student;
     }
     [HttpPost("Create")]
-    public async Task<ActionResult> CreateNewTeacher([FromBody]TeacherDTO teacherDTO) 
+    [Authorize(Roles = "Admin,Menager")]
+    public async Task<ActionResult> CreateNewTeacher([FromBody]TeachersDTO teacherDTO) 
     {
          if (ModelState.IsValid)
             return BadRequest(ModelState);
@@ -61,7 +65,8 @@ public class TeacherController : ControllerBase
         return Ok("your created techer succsesfuly");
     }
     [HttpPut]
-    public async Task<ActionResult> UpdatedTeacher([FromBody] TeacherDTO teacherDTO) 
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult> UpdatedTeacher([FromBody] TeachersDTO teacherDTO) 
     {
         if (ModelState.IsValid)
             return BadRequest(ModelState);

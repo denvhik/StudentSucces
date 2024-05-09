@@ -1,30 +1,29 @@
 ﻿using AuthenticationWebApi.Models;
-using BllAuth.Services;
+using BllAuth.Services.AuthService;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AuthenticationWebApi.Controllers
+namespace AuthenticationWebApi.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class RoleController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class RoleController : ControllerBase
+    private readonly IAuthService _roleService;
+
+    public RoleController(IAuthService roleService)
     {
-        private readonly IAuthService _roleService;
+        _roleService = roleService;
+    }
+    [HttpPost("add")]
+    public async Task<IActionResult> AddRole([FromBody] RoleModel model)
+    {
+        var result = await _roleService.AddRoleAsync(model.RoleName);
 
-        public RoleController(IAuthService roleService)
+        if (result.Contains("successfully"))
         {
-            _roleService = roleService;
+            return Ok(result);
         }
-        [HttpPost("add")]
-        public async Task<IActionResult> AddRole([FromBody] RoleModel model)
-        {
-            var result = await _roleService.AddRoleAsync(model.RoleName);
 
-            if (result.Contains("successfully"))
-            {
-                return Ok(result);
-            }
-
-            return BadRequest(result);
-        }
+        return BadRequest(result);
     }
 }

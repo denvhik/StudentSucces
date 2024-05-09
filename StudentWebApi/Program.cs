@@ -2,22 +2,38 @@ using Asp.Versioning;
 using BLL;
 using DAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Sieve.Services;
 using StudentWebApi.Autommaper;
 using StudentWebApi.ErrorHanldeMiddleware.ErrorDetailsModel;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 // AddAsync services to the container.
+IConfiguration config = new ConfigurationBuilder()
+              .SetBasePath(Directory.GetCurrentDirectory())
+              .AddJsonFile("appsettings.json")
+              .Build();
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(x =>
+}).AddJwtBearer(options =>
 {
-
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidAudience = config["JwtOptions:Audience"],
+        ValidIssuer = config["JwtOptions:Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtOptions:SecretKey"]!))
+    };
+  
 });
 builder.Services.AddDalService();   
 builder.Services.AddBllService();
@@ -52,12 +68,13 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
         BearerFormat = "JWT",
+        Name = "JWT Authentication",
         In = ParameterLocation.Header,
-        Description = "JWT Authorization header using the Bearer scheme."
+        Type = SecuritySchemeType.Http,
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
+        Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+
     });
     c.AddSecurityRequirement(new OpenApiSecurityRequirement {
             {
@@ -79,8 +96,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-//app.UseMiddleware<ExceptionMiddlewareExtension>();
-//app.UseMiddleware<CustomErrorHandlingMiddleware>();
+
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAuthentication();

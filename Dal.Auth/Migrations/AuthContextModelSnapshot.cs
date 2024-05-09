@@ -94,6 +94,33 @@ namespace DalAuth.Migrations
                     b.ToTable("User", (string)null);
                 });
 
+            modelBuilder.Entity("DalAuth.Model.Photo", b =>
+                {
+                    b.Property<int>("PhotoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PhotoId"));
+
+                    b.Property<string>("ContentType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("ImageData")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PhotoId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Photos", (string)null);
+                });
+
             modelBuilder.Entity("DalAuth.Model.Roles", b =>
                 {
                     b.Property<Guid>("Id")
@@ -225,6 +252,17 @@ namespace DalAuth.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("DalAuth.Model.Photo", b =>
+                {
+                    b.HasOne("Dal.Auth.Model.User", "User")
+                        .WithMany("Photo")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("DalAuth.Model.Roles", null)
@@ -274,6 +312,11 @@ namespace DalAuth.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Dal.Auth.Model.User", b =>
+                {
+                    b.Navigation("Photo");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,5 +1,4 @@
-﻿using DAL.Models;
-namespace BLL.StudentDto;
+﻿namespace BLL.StudentDto;
 public  class StudentsJoinedEntetiesDTO
 {
     public int? StudentId { get; set; }
@@ -27,7 +26,7 @@ public  class StudentsJoinedEntetiesDTO
 
 
     public List<GroupDTO> Groups { get; set; }
-    public List<HobbieDTO> Hobbies { get; set; }
+    public List<TeachersDTO> Hobbies { get; set; }
     //public virtual ICollection<StudentScholarshipAudit> StudentScholarshipAudits { get; set; } = new List<StudentScholarshipAudit>();
 
     //public virtual ICollection<StudentSubject> StudentSubjects { get; set; } = new List<StudentSubject>();
