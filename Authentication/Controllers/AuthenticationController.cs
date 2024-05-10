@@ -5,8 +5,6 @@ using BllAuth.Services.AuthService;
 using BllAuth.Services.EmailService;
 using BllAuth.Services.GenerateTokenService;
 using BllAuth.Services.LogOutService;
-using Dal.Auth.Model;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BllAuth;
+using AwsS3Service;
 using Microsoft.AspNetCore.Identity;
 using Dal.Auth.Context;
 using AuthenticationWebApi.MappingProfiles;
@@ -24,6 +25,7 @@ public class Program
     
         builder.Services.AddControllers();
         builder.Services.AddBllAuthService();
+        builder.Services.AwsService();
         builder.Services.AddAutoMapper(typeof(UserProfiles));
         builder.Services.AddIdentity<User, Roles>()
      .AddEntityFrameworkStores<AuthContext>();
