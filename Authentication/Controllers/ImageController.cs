@@ -1,4 +1,5 @@
-﻿using BllAuth.Services.ImageUploadService;
+﻿using AwsS3Service;
+using BllAuth.Services.ImageUploadService;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -10,10 +11,12 @@ namespace AuthenticationWebApi.Controllers
     {
         private readonly IPhotoService _photoService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public ImageController(IPhotoService photoService, IHttpContextAccessor httpContextAccessor)
+        private readonly IS3Service _s3Service;
+        public ImageController(IPhotoService photoService, IHttpContextAccessor httpContextAccessor, IS3Service s3Service)
         {
             _photoService = photoService;
             _httpContextAccessor = httpContextAccessor;
+            _s3Service = s3Service;
         }
 
         // GET: api/Avatars
@@ -33,14 +36,17 @@ namespace AuthenticationWebApi.Controllers
         }
 
         // POST: api/Avatars
-        [HttpPost]
+        [HttpPost("uploadAva")]
         public async Task<IActionResult> UploadAvatar( IFormFile file)
         {
             try
             {
+                string guid = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                using  var stream = file.OpenReadStream();
+                 var resultUrl = await _s3Service.UploadFileAsync(stream, guid);
                 var userid = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var message = await _photoService.UploadAvatarAsync(file, userid);
-                return Ok(message);
+                var message = await _photoService.UploadAvatarAsync(file, userid, resultUrl);
+                return Ok();
             }
             catch (Exception ex)
             {

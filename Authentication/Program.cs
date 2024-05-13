@@ -9,6 +9,8 @@ using AuthenticationWebApi.MappingProfiles;
 using Dal.Auth.Model;
 using DalAuth.Model;
 using Microsoft.OpenApi.Models;
+using Amazon.Runtime;
+using Amazon;
 
 
 namespace AuthenticationWebApi;
@@ -26,6 +28,12 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddBllAuthService();
         builder.Services.AwsService();
+        var awssettings = config.GetSection("AWS");
+        var credential = new BasicAWSCredentials(awssettings["AccessKey"], awssettings["SecretAccessKey"]);
+        var awsOption = config.GetAWSOptions();
+        awsOption.Credentials = credential;
+        awsOption.Region = RegionEndpoint.EUNorth1;
+        builder.Services.AddDefaultAWSOptions(awsOption);
         builder.Services.AddAutoMapper(typeof(UserProfiles));
         builder.Services.AddIdentity<User, Roles>()
      .AddEntityFrameworkStores<AuthContext>();

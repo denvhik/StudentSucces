@@ -41,7 +41,7 @@ public class PhotoService : IPhotoService
         return result;
     }
 
-    public async Task<string> UploadAvatarAsync(IFormFile file, string userId)
+    public async Task<string> UploadAvatarAsync(IFormFile file, string userId, string url)
     {
         if (string.IsNullOrEmpty(userId))
             throw new Exception("User not authenticated");
@@ -56,9 +56,11 @@ public class PhotoService : IPhotoService
         {
             var photo = new Photo
             {
+                Title =file.FileName,
                 ImageData = memoryStream.ToArray(),
                 ContentType = file.ContentType,
-                UserId = user.Id
+                UserId = user.Id,
+                Url = url
             };
 
             _applicationDbContext.Photos.Add(photo);

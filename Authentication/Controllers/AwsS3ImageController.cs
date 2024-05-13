@@ -1,46 +1,45 @@
 ﻿using AwsS3Service;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AuthenticationWebApi.Controllers
+namespace AuthenticationWebApi.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class AwsS3ImageController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AwsS3ImageController : ControllerBase
+
+    private readonly IS3Service _s3Service;
+
+    public AwsS3ImageController(IS3Service s3Service)
     {
- 
-        private readonly IS3Service _s3Service;
+        _s3Service = s3Service;
+    }
 
-        public AwsS3ImageController(IS3Service s3Service)
-        {
-            _s3Service = s3Service;
-        }
+    [HttpPost("upload")]
+    public async Task<IActionResult> UploadFile(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("No file uploaded.");
+        string guid = Guid.NewGuid()+Path.GetExtension(file.FileName); 
+        using var stream = file.OpenReadStream();
+        await _s3Service.UploadFileAsync(stream, guid);
+        return Ok();
+    }
 
-        [HttpPost("upload")]
-        public async Task<IActionResult> UploadFile(IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-                return BadRequest("No file uploaded.");
+    [HttpGet("{fileName}")]
+    public async Task<IActionResult> GetFile(string fileName)
+    {
+        var stream = await _s3Service.GetFileAsync(fileName);
+        if (stream == null)
+            return NotFound();
 
-            using var stream = file.OpenReadStream();
-            await _s3Service.UploadFileAsync(stream, file.FileName);
-            return Ok();
-        }
+        return File(stream, "application/octet-stream", fileName);
+    }
 
-        [HttpGet("{fileName}")]
-        public async Task<IActionResult> GetFile(string fileName)
-        {
-            var stream = await _s3Service.GetFileAsync(fileName);
-            if (stream == null)
-                return NotFound();
-
-            return File(stream, "application/octet-stream", fileName);
-        }
-
-        [HttpDelete("{fileName}")]
-        public async Task<IActionResult> DeleteFile(string fileName)
-        {
-            await _s3Service.DeleteFileAsync(fileName);
-            return Ok();
-        }
+    [HttpDelete("{fileName}")]
+    public async Task<IActionResult> DeleteFile(string fileName)
+    {
+        await _s3Service.DeleteFileAsync(fileName);
+        return Ok();
     }
 }
