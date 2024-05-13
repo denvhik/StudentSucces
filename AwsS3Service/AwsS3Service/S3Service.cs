@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using System.Net;
 
 namespace AwsS3Service;
 public class S3Service :IS3Service
@@ -14,15 +15,36 @@ public class S3Service :IS3Service
 
     public async Task<string> UploadFileAsync(Stream fileStream, string fileName)
     {
-        var request =  new Amazon.S3.Model.PutObjectRequest
+        if (fileStream == null) 
+        throw new ArgumentNullException(nameof(fileStream));
+
+        if (fileName == null)
+            throw new ArgumentNullException(nameof(fileName));
+
+        try
         {
-            InputStream = fileStream,
-            BucketName = _bucketName,
-            Key = fileName,
-        };
-        await _client.PutObjectAsync(request);
-        var url = $"https://{_bucketName}.s3.{_region}.amazonaws.com/{fileName}";
-        return url ;
+            var request = new Amazon.S3.Model.PutObjectRequest
+            {
+                InputStream = fileStream,
+                BucketName = _bucketName,
+                Key = fileName,
+            };
+
+            await _client.PutObjectAsync(request);
+
+            var url = $"https://{_bucketName}.s3.{_region}.amazonaws.com/{fileName}";
+            return url;
+        }
+        catch (AmazonS3Exception ex)
+        {
+          
+            throw new AmazonS3Exception(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            
+            throw new Exception(ex.Message);
+        }
     }
 
     public async Task<Stream> GetFileAsync(string fileName)
@@ -36,13 +58,28 @@ public class S3Service :IS3Service
         return response.ResponseStream;
     }
 
-    public async Task DeleteFileAsync(string fileName)
+    public async Task<DeleteObjectResponse> DeleteFileAsync(string fileName)
     {
-        var request = new DeleteObjectRequest
+        try
         {
-            BucketName = _bucketName,
-            Key = fileName
-        };
-        await _client.DeleteObjectAsync(request);
+            var request = new DeleteObjectRequest
+            {
+                BucketName = _bucketName,
+                Key = fileName
+            };
+
+            var response = await _client.DeleteObjectAsync(request);
+            return response;
+        }
+        catch (AmazonS3Exception ex)
+        {
+
+            throw new Exception($"Amazon S3 exception occurred: {ex.Message}", ex);
+        }
+        catch (Exception ex)
+        {
+
+            throw new Exception($"An error occurred while deleting file '{fileName}': {ex.Message}", ex);
+        }
     }
 }

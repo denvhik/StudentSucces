@@ -11,6 +11,7 @@ using DalAuth.Model;
 using Microsoft.OpenApi.Models;
 using Amazon.Runtime;
 using Amazon;
+using System.Reflection;
 
 
 namespace AuthenticationWebApi;
@@ -77,6 +78,10 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c =>
         {
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            c.IncludeXmlComments(xmlPath);
+
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 BearerFormat = "JWT",

@@ -1,5 +1,6 @@
 ﻿using AwsS3Service;
 using BllAuth.Services.ImageUploadService;
+using Dal.Auth.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -20,7 +21,7 @@ namespace AuthenticationWebApi.Controllers
         }
 
         // GET: api/Avatars
-        [HttpGet]
+        [HttpGet("getavatar")]
         public async Task<IActionResult> GetAllAvatars()
         {
             try
@@ -40,18 +41,29 @@ namespace AuthenticationWebApi.Controllers
         public async Task<IActionResult> UploadAvatar( IFormFile file)
         {
             try
-            {
+            {   
                 string guid = Guid.NewGuid() + Path.GetExtension(file.FileName);
                 using  var stream = file.OpenReadStream();
                  var resultUrl = await _s3Service.UploadFileAsync(stream, guid);
-                var userid = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var message = await _photoService.UploadAvatarAsync(file, userid, resultUrl);
+                if (!string.IsNullOrEmpty(resultUrl))
+                {
+                    var userid = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var user = await _photoService.UploadAvatarWithoutDataAsync(file, userid, resultUrl);
+                }
+
                 return Ok();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+               throw new Exception(ex.Message);
             }
+        }
+
+        [HttpDelete("{fileName}")]
+        public async Task<IActionResult> DeleteFile(string fileName)
+        {
+             var response = await _s3Service.DeleteFileAsync(fileName);
+            return Ok(response);
         }
     }
 }

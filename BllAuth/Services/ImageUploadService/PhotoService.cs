@@ -73,4 +73,36 @@ public class PhotoService : IPhotoService
             throw new Exception("File too large");
         }
     }
+
+    public async Task<string> UploadAvatarWithoutDataAsync(IFormFile file,string userId, string url)
+    {
+        if (string.IsNullOrEmpty(userId))
+            throw new Exception("User not authenticated");
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            throw new Exception("User not found");
+
+        using var memoryStream = new MemoryStream();
+        if (memoryStream.Length < 5097152)
+        {
+            var photo = new Photo
+            {
+                Title = file.FileName,
+                ImageData = null,
+                ContentType = file.ContentType,
+                UserId = user.Id,
+                Url = url
+            };
+
+            _applicationDbContext.Photos.Add(photo);
+            await _applicationDbContext.SaveChangesAsync();
+
+            return $"Avatar uploaded successfully with ID {photo.PhotoId}";
+        }
+        else
+        {
+            throw new Exception("File too large");
+        }
+    }
 }

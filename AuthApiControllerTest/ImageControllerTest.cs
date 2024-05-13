@@ -1,11 +1,8 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
-using AuthenticationWebApi.Controllers;
+﻿using AuthenticationWebApi.Controllers;
 using AwsS3Service;
 using BllAuth.Services.ImageUploadService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Storage.Json;
 using NSubstitute;
 using System.Security.Claims;
 using System.Text;
