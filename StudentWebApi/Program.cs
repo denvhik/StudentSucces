@@ -6,8 +6,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Sieve.Services;
+using SNSSample;
 using StudentWebApi.Autommaper;
 using StudentWebApi.ErrorHanldeMiddleware.ErrorDetailsModel;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +18,9 @@ IConfiguration config = new ConfigurationBuilder()
               .SetBasePath(Directory.GetCurrentDirectory())
               .AddJsonFile("appsettings.json")
               .Build();
+builder.Services.AddSNSExtension();
+
+
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -40,7 +45,6 @@ builder.Services.AddBllService();
 builder.Services.AddMemoryCache();
 builder.Services.AddLogging();
 builder.Services.AddExceptionHandler<GlobalExtensionHandler>();
-
 builder.Services.AddSingleton<ErrorMessageLoader>();
 builder.Services.AddSingleton<SieveProcessor>();
 builder.Services.AddAutoMapper(typeof(MapperProvider));
@@ -66,6 +70,9 @@ builder.Host.UseSerilog();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         BearerFormat = "JWT",

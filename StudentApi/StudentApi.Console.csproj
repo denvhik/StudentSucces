@@ -30,6 +30,7 @@
     <ProjectReference Include="..\ADO,NET\ADONET.csproj" />
     <ProjectReference Include="..\BLL\BLL.csproj" />
     <ProjectReference Include="..\DAL\DAL.csproj" />
+    <ProjectReference Include="..\StudentApiControllerTest\StudentApiControllerTest.csproj" />
   </ItemGroup>
 
 </Project>
