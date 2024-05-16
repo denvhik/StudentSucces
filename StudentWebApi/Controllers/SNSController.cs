@@ -1,37 +1,43 @@
 ﻿using Amazon.SimpleNotificationService.Model;
+using AutoMapper;
+using BLL.Services.StudentBookService;
 using Microsoft.AspNetCore.Mvc;
 using SNSSample.SNSservice;
+using SQSSample.Models;
+using SQSSample.SQSServices;
+using StudentWebApi.Models;
 
-namespace StudentWebApi.Controllers
+namespace StudentWebApi.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class SNSController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class SNSController : ControllerBase
+    private readonly ISNSService _iSNSService;
+    private readonly ISQSService _sqSService;
+    public SNSController(ISNSService iSNSService,ISQSService sqSService)
     {
-        private readonly ISNSService _iSNSService;
-
-        public SNSController(ISNSService iSNSService)
+        _iSNSService = iSNSService;
+      
+    }
+    /// <summary>
+    /// this controller  sent message to NotificationSendAsync  Service and get response
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    [HttpPost("SNS")]
+    public async Task<PublishResponse> PublishNotification(string message) 
+    {
+        try
         {
-            _iSNSService = iSNSService;
-        }
-        /// <summary>
-        /// this controller  sent message to NotificationSendAsync  Service and get response
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        [HttpPost("SNS")]
-        public async Task<PublishResponse> PublishNotification(string message) 
+            var response = await _iSNSService.NotificationSendAsync(message);
+            return response;
+        } 
+        catch (ArgumentNullException ex)
         {
-            try
-            {
-                var response = await _iSNSService.NotificationSendAsync(message);
-                return response;
-            } 
-            catch (ArgumentNullException ex)
-            {
-                throw new ArgumentNullException(ex.Message);
-            }
+            throw new ArgumentNullException(ex.Message);
         }
     }
+
 }

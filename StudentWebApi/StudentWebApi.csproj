@@ -39,6 +39,7 @@
     <ProjectReference Include="..\DAL\DAL.csproj" />
     <ProjectReference Include="..\Handling\Handling.csproj" />
     <ProjectReference Include="..\SNSSample\SNSSample.csproj" />
+    <ProjectReference Include="..\SQSSample\SQSSample.csproj" />
   </ItemGroup>
 
 </Project>

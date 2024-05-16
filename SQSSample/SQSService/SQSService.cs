@@ -1,32 +1,35 @@
-﻿using Amazon.SQS;
+﻿using Amazon.Runtime;
+using Amazon.SQS;
 using Amazon.SQS.Model;
 using Microsoft.Extensions.Configuration;
-using StudentWebApi.Models;
+using SQSSample.Models;
 using System.Text.Json;
 
 
-namespace SQSSample.SQSService
+namespace SQSSample.SQSServices;
+public class SQSService : ISQSService
 {
-    public class SQSService : ISQSService
+    private readonly IConfiguration _configuration;
+    public SQSService( IConfiguration configuration)
     {
-        private readonly IAmazonSQS _sqsClient;
-        private readonly string _queueUrl;
+       
+        _configuration = configuration;
+    }
 
-        public SQSService(IAmazonSQS sqsClient, IConfiguration configuration)
+    public async Task<SendMessageResponse> SendMessageAsync(NotificationMessage message)
+    {
+        var awsAccessKey = _configuration.GetSection("AWSSQS:AccessKey").Value;
+        var awsSecretAccessKey = _configuration.GetSection("AWSSQS:SecretAccessKey").Value;
+        var cred = new BasicAWSCredentials(awsAccessKey, awsSecretAccessKey);
+        var client = new AmazonSQSClient(cred, Amazon.RegionEndpoint.EUNorth1);
+        var queueUrl = _configuration.GetSection("AWSSQS:SQSurl").Value;
+        var sendMessageRequest = new SendMessageRequest
         {
-            _sqsClient = sqsClient;
-            _queueUrl = configuration["SQS:QueueUrl"];
-        }
+            QueueUrl = queueUrl,
+            MessageBody = JsonSerializer.Serialize(message)
+        };
 
-        public async Task<SendMessageResponse> SendMessageAsync(NotificationMessage message)
-        {
-            var sendMessageRequest = new SendMessageRequest
-            {
-                QueueUrl = _queueUrl,
-                MessageBody = JsonSerializer.Serialize(message)
-            };
-
-            return await _sqsClient.SendMessageAsync(sendMessageRequest);
-        }
+        var response =  await client.SendMessageAsync(sendMessageRequest);
+        return response;
     }
 }

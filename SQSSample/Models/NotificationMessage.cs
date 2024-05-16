@@ -1,4 +1,5 @@
-﻿namespace StudentWebApi.Models;
+﻿
+namespace SQSSample.Models;
 
 public class NotificationMessage
 {

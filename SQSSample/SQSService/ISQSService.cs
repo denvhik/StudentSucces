@@ -1,10 +1,9 @@
 ﻿using Amazon.SQS.Model;
-using StudentWebApi.Models;
+using SQSSample.Models;
 
-namespace SQSSample.SQSService
+namespace SQSSample.SQSServices;
+
+public interface ISQSService
 {
-    public interface ISQSService
-    {
-        Task<SendMessageResponse> SendMessageAsync(NotificationMessage message);
-    }
+    Task<SendMessageResponse> SendMessageAsync(NotificationMessage message);
 }

@@ -1,3 +1,4 @@
+using Amazon.SQS;
 using Asp.Versioning;
 using BLL;
 using DAL;
@@ -7,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Sieve.Services;
 using SNSSample;
+using SQSSample;
 using StudentWebApi.Autommaper;
 using StudentWebApi.ErrorHanldeMiddleware.ErrorDetailsModel;
 using System.Reflection;
@@ -19,6 +21,7 @@ IConfiguration config = new ConfigurationBuilder()
               .AddJsonFile("appsettings.json")
               .Build();
 builder.Services.AddSNSExtension();
+builder.Services.AddSQSExtension();
 
 
 builder.Services.AddAuthentication(x =>
