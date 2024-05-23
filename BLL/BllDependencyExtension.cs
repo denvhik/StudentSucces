@@ -11,7 +11,6 @@ using DAL.Repository.Implementation;
 using DAL.Repository.StudentSortingRepository;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PasswordHasherAuth;
 using Serilog;
 
 namespace BLL;
@@ -34,7 +33,6 @@ public static class BllDependencyExtension
         services.AddScoped<ISubjectService, SubjectService>();
         services.AddScoped<IStudentsDetailsService, StudentsDetailsService>();
 
-        services.AddScoped<IPasswordHasher, PasswordHasher>();
        
 
         services.AddScoped<IStudentDormitoryService, StudentDormitoryService>();

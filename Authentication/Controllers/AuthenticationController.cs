@@ -146,7 +146,7 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> ChangePassword([FromBody] ChangePassword changePassword) 
     {
         if (changePassword == null) 
-           return BadRequest("Invalid requst data");
+           return BadRequest("Invalid request data");
 
         var result = await _authService.ChangePasswordAsync(changePassword.Email, 
             changePassword.CurrentPassword, changePassword.NewPassword);

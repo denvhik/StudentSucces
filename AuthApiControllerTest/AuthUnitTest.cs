@@ -6,8 +6,11 @@ using BllAuth.Services.AuthService;
 using BllAuth.Services.EmailService;
 using BllAuth.Services.GenerateTokenService;
 using BllAuth.Services.LogOutService;
+using Dal.Auth.Model;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
+using System.Security.Claims;
 
 namespace AuthApiControllerTest;
 
@@ -120,6 +123,103 @@ public class Tests
         // Act & Assert
         var ex = Assert.ThrowsAsync<FormatException>(() => authenticationController.Login(request));
         Assert.That(ex.Message, Is.EqualTo("Invalid email format"));
+    }
 
+    [Test]
+    public async Task RefreshToken_ShouldReturnOk_WhenTokenIsRefreshedSuccessfully()
+    {
+        // Arrange
+        var request = new RefreshTokenRequest
+        {
+            AccessToken = "AccessToken",
+            RefreshToken = "RefreshToken"
+        };
+
+        // Mock the behavior of GetPrincipalFromExpiredToken method
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+        {
+        new Claim(ClaimTypes.Email, "test@example.com")
+        }));
+        generateTokenService.GetPrincipalFromExpiredToken(request.AccessToken).Returns(principal);
+
+        // Mock the behavior of GetUserByEmail method
+        var user = new User { Email = "test@example.com", RefreshToken = "RefreshToken", ExpirationTimetoken = DateTime.UtcNow.AddDays(1) };
+        emailService.GetUserByEmail(Arg.Any<string>()).Returns(user);
+
+        // Mock the behavior of GenerateAccesToken method
+        generateTokenService.GenerateAccesToken(Arg.Any<LoginUser>()).Returns(Task.FromResult("NewAccessToken"));
+
+        // Mock the behavior of GenerateRefreshToken method
+        generateTokenService.GenerateRefreshToken(Arg.Any<LoginUser>()).Returns(Task.FromResult("NewRefreshToken"));
+
+        // Act
+        var result = await authenticationController.RefreshToken(request);
+
+        // Assert
+        Assert.IsInstanceOf<OkObjectResult>(result);
+        var okResult = result as OkObjectResult;
+        var response = okResult.Value as LoginResponse;
+        Assert.That(response.Token, Is.EqualTo("NewAccessToken"));
+        Assert.That(response.RefreshToken, Is.EqualTo("NewRefreshToken"));
+    }
+    [Test]
+    public async Task ChangePassword_ShouldReturnOk_WhenPasswordIsChangedSuccessfully()
+    {
+        // Arrange
+        var changePassword = new ChangePassword
+        {
+            Email = "test@example.com",
+            CurrentPassword = "oldpassword",
+            NewPassword = "newpassword"
+        };
+
+        // Mock the behavior of ChangePasswordAsync method
+        var result = IdentityResult.Success;
+        authService.ChangePasswordAsync(changePassword.Email, changePassword.CurrentPassword, changePassword.NewPassword).Returns(Task.FromResult(result));
+
+        // Act
+        var response = await authenticationController.ChangePassword(changePassword);
+
+        // Assert
+        Assert.IsInstanceOf<OkObjectResult>(response);
+        var okResult = response as OkObjectResult;
+        Assert.That(okResult.Value, Is.EqualTo("Password changed successfully"));
+    }
+
+    [Test]
+    public async Task ChangePassword_ShouldReturnBadRequest_WhenRequestDataIsNull()
+    {
+        // Act
+        var response = await authenticationController.ChangePassword(null);
+
+        // Assert
+        Assert.IsInstanceOf<BadRequestObjectResult>(response);
+        var badRequestResult = response as BadRequestObjectResult;
+        Assert.That(badRequestResult.Value, Is.EqualTo("Invalid request data"));
+    }
+
+    [Test]
+    public async Task ChangePassword_ShouldReturnBadRequest_WhenChangePasswordFails()
+    {
+        // Arrange
+        var changePassword = new ChangePassword
+        {
+            Email = "test@example.com",
+            CurrentPassword = "oldpassword",
+            NewPassword = "newpassword"
+        };
+
+        // Mock the behavior of ChangePasswordAsync method to simulate failure
+        var errors = new List<IdentityError> { new IdentityError { Description = "Password change failed" } };
+        var result = IdentityResult.Failed(errors.ToArray());
+        authService.ChangePasswordAsync(changePassword.Email, changePassword.CurrentPassword, changePassword.NewPassword).Returns(Task.FromResult(result));
+
+        // Act
+        var response = await authenticationController.ChangePassword(changePassword);
+
+        // Assert
+        Assert.IsInstanceOf<BadRequestObjectResult>(response);
+        var badRequestResult = response as BadRequestObjectResult;
+        Assert.That(badRequestResult.Value, Is.EqualTo(errors));
     }
 }

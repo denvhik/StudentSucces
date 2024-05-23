@@ -36,7 +36,7 @@ public class SQSController : ControllerBase
         NotificationMessageDTO message = new()
         {
             CurrentDateTime = DateTime.Now,
-            ExecutorId =new Guid( request.ExecutorId).ToString(),
+            ExecutorId =request.ExecutorId,
             ActionName = request.ActionName,
             EntityId = request.EntityId,
             Body = entity

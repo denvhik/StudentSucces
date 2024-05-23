@@ -5,8 +5,15 @@ using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 
 namespace SNSSample.SNSservice;
-public class SNSService(IConfiguration configuration) : ISNSService
+public class SNSService : ISNSService
 {
+    private readonly IConfiguration configuration;
+
+    public SNSService(IConfiguration configuration)
+    {
+        this.configuration = configuration;
+    }
+
     /// <summary>
     /// Sends a notification message to an AWS SNS topic.
     /// </summary>

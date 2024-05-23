@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DAL\DAL.csproj" />
-    <ProjectReference Include="..\PasswordHasher\PasswordHasher.csproj" />
   </ItemGroup>
 
   <ItemGroup>

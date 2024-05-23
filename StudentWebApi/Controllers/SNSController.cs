@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using SNSSample.SNSservice;
 using SQSSample.Models;
 using SQSSample.SQSServices;
-using StudentWebApi.Models;
 
 namespace StudentWebApi.Controllers;
 
@@ -14,7 +13,6 @@ namespace StudentWebApi.Controllers;
 public class SNSController : ControllerBase
 {
     private readonly ISNSService _iSNSService;
-    private readonly ISQSService _sqSService;
     public SNSController(ISNSService iSNSService,ISQSService sqSService)
     {
         _iSNSService = iSNSService;

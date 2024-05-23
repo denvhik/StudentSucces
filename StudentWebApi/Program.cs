@@ -1,4 +1,3 @@
-using Amazon.SQS;
 using Asp.Versioning;
 using BLL;
 using DAL;
@@ -9,6 +8,7 @@ using Serilog;
 using Sieve.Services;
 using SNSSample;
 using SQSSample;
+using StudentWebApi;
 using StudentWebApi.Autommaper;
 using StudentWebApi.ErrorHanldeMiddleware.ErrorDetailsModel;
 using System.Reflection;
@@ -20,9 +20,10 @@ IConfiguration config = new ConfigurationBuilder()
               .SetBasePath(Directory.GetCurrentDirectory())
               .AddJsonFile("appsettings.json")
               .Build();
+builder.Services.AddControllers();
 builder.Services.AddSNSExtension();
 builder.Services.AddSQSExtension();
-
+//builder.Services.ConfigureServices(builder.Configuration);
 
 builder.Services.AddAuthentication(x =>
 {
@@ -41,7 +42,7 @@ builder.Services.AddAuthentication(x =>
         ValidIssuer = config["JwtOptions:Issuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtOptions:SecretKey"]!))
     };
-  
+
 });
 builder.Services.AddDalService();   
 builder.Services.AddBllService();
