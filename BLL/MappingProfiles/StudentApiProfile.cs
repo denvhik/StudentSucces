@@ -11,16 +11,18 @@ public class StudentApiProfile:Profile
         CreateMap<StudentDTO,Student>().ForMember(p=>p.StudentId,x=>x.MapFrom(src=>src.Id)).ReverseMap();
         CreateMap<GroupDTO, Group>().ForMember(p => p.GroupName,x=>x.MapFrom(src=>src.GroupName)).ReverseMap();
         CreateMap<SubjectDTO, Subject>().ReverseMap();
+        CreateMap<TeachersDTO, Teacher>().ReverseMap();
+        CreateMap<HobbyDTO, Hobbie>().ReverseMap();
         CreateMap<StudentBookDTO, Book>().ReverseMap();
         CreateMap<StudentDebtDTO, StudentDebt>().ReverseMap();
-        CreateMap<HobbieDTO, Hobbie>().ReverseMap();
+        CreateMap<TeachersDTO, Hobbie>().ReverseMap();
         CreateMap<BllStudentBookDTO,DalBookDetailsDto>().ReverseMap();
         CreateMap<Student, StudentsJoinedEntetiesDTO>()
          .ForMember(dest => dest.Groups, opt => opt.MapFrom(src => src.StudentGroups.Select(sg => new GroupDTO
          {
              GroupName = sg.Group.GroupName
          })))
-         .ForMember(dest => dest.Hobbies, opt => opt.MapFrom(src => src.StudentHobbies.Select(sh => new HobbieDTO
+         .ForMember(dest => dest.Hobbies, opt => opt.MapFrom(src => src.StudentHobbies.Select(sh => new TeachersDTO
          {
              HobbyName = sh.Hobby.HobbyName
          })))

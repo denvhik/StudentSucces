@@ -1,7 +1,6 @@
 ﻿using BLL.Services.StudentBookService;
-using BLL.Services.StudentService;
 using BLL.StudentDto;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace StudentWebApi.Controllers;
@@ -18,7 +17,13 @@ public class StudentBookDetailsController : ControllerBase
         _studentBookDetailsService = studentBookDetailsService;
         _logger = logger;
     }
+    /// <summary>
+    /// Retrieves a list of books checked out by students, including student names and book titles.
+    /// </summary>
+    /// <returns>A list of book details associated with students, including names, book titles, and check-out dates.</returns>
+    /// <exception cref="Exception">Thrown when there is an error retrieving the book details from the database.</exception>
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<List<BllStudentBookDTO>>> GetStudentBookDetails() 
     {
         List<BllStudentBookDTO> studentBookDTOs = new List<BllStudentBookDTO>();

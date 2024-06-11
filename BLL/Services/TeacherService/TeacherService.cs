@@ -18,7 +18,7 @@ public class TeacherService:ITeacherService
         _genericRepository = genericRepository;
         _logger = logger;
     }
-    public async Task AddTeacherAsync(TeacherDTO teacherDTO)
+    public async Task AddTeacherAsync(TeachersDTO teacherDTO)
     {
         try
         {
@@ -59,14 +59,14 @@ public class TeacherService:ITeacherService
         }
     }
 
-    public async Task<List<TeacherDTO>> GetTeacherAsync()
+    public async Task<List<TeachersDTO>> GetTeacherAsync()
     {
         try
         {
             _logger.LogInformation("Початок методу GetTeacherAsync");
             var Teachers = await _genericRepository.GetAllAsync();
             _logger.LogInformation($"Teachers: {Teachers}");
-            var TeacherDTO = _mapper.Map<List<TeacherDTO>>(Teachers);
+            var TeacherDTO = _mapper.Map<List<TeachersDTO>>(Teachers);
             _logger.LogInformation($"Teachers: {TeacherDTO}");
             return TeacherDTO;
         }
@@ -80,7 +80,7 @@ public class TeacherService:ITeacherService
         }
     }
 
-    public async Task UpgradeTeacherAsync(TeacherDTO teacherDTO)
+    public async Task UpgradeTeacherAsync(TeachersDTO teacherDTO)
     {
         try
         {
